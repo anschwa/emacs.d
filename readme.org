@@ -10,6 +10,8 @@
   2. create an empty themes directory: =mkdir themes=
   3. manually tangle some code blocks: =M-x org-babel-tangle=
 
+[[file:screenshot.png]]
+
 * Installing Emacs
 ** macOS
 *** Homebrew Cask
