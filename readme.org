@@ -91,9 +91,10 @@
     (set-default 'indent-tabs-mode nil)
 
     ;; Except in Makefiles.
-    (defun my/tabs-makefile-hook ()
-      (setq indent-tabs-mode t))
-    (add-hook 'makefile-mode-hook 'my/tabs-makefile-hook)
+    (add-hook 'makefile-mode-hook 'indent-tabs-mode)
+
+    ;; Keep files clean.
+    (add-hook 'before-save-hook 'whitespace-cleanup)
   #+END_SRC
 
 * Better Defaults
@@ -108,8 +109,7 @@
     (setq select-enable-primary nil)
 
     ;; Full path in frame title
-    (when window-system
-      (setq frame-title-format '(buffer-file-name "%f" ("%b"))))
+    (setq frame-title-format '(buffer-file-name "%f" ("%b")))
 
     ;; Auto refresh buffers when edits occur outside emacs
     (global-auto-revert-mode 1)
