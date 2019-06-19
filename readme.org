@@ -416,7 +416,7 @@
        (cond
         ((string-equal system-type "gnu/linux")
          (define-key special-event-map [config-changed-event] 'ignore) ; prevent GConf from interfering
-         (set-frame-font "Inconsolata 12" nil t))
+         (set-frame-font "DejaVu Sans Mono 10" nil t))
         ((string-equal system-type "darwin")
          (set-frame-font "Menlo 12" nil t))))
    #+END_SRC
