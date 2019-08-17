@@ -312,6 +312,17 @@
      (bind-key "M-2" 'split-window-vertically)
      (bind-key "M-3" 'split-window-horizontally)
      (bind-key "M-=" 'balance-windows)
+
+     ;; More parity with readline
+     (bind-key "C-h" 'backward-delete-char) ; help is still available with M-x describe-<function|variable|key>
+     (bind-key "C-w" 'my/backward-kill-word)
+
+     (defun my/backward-kill-word (&optional arg)
+       "kill active region or one word backward"
+       (interactive "p")
+       (if (region-active-p)
+           (kill-region (region-beginning) (region-end))
+         (backward-kill-word arg)))
    #+END_SRC
 
 ** Unbind keys
