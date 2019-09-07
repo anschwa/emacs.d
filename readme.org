@@ -563,26 +563,20 @@
    #+END_SRC
 
 ** Python
-   A couple helpful =python= packages to give us autocompletion and error
-   checking.
+   A couple helpful =python= packages to give us autocompletion and
+   error checking.
 
    #+BEGIN_SRC sh
-pip install jedi
-pip install flake8
+     pip3 install jedi flake8 black
    #+END_SRC
 
-   Jedi gives us intelligent auto-completion for Python in Emacs.
-
-   1. =M-x package-install RET company-jedi RET=
+   I was using jedi with company for auto-completion, but now I mostly
+   only care about automatic code formatting.
 
    #+BEGIN_SRC emacs-lisp
-  ;; Use Company for auto-completion interface.
-  (use-package company-jedi
-    :ensure t
-    :init
-    (defun my/python-mode-hook ()
-      (add-to-list 'company-backends 'company-jedi))
-    :hook (python-mode my/python-mode-hook))
+     (use-package blacken
+       :ensure t
+       :hook ((python-mode . blacken-mode)))
    #+END_SRC
 
 ** Ruby
@@ -1129,117 +1123,125 @@ pip install flake8
    into dynamic / static templates.
 
    #+BEGIN_SRC emacs-lisp
-  ;; Global
-  (defun insert-date (str)
-    "Insert current date in ISO 8601.
-      Typing 'v' will insert the current date verbosely.
-      Typing 't' will append the time in H:M:S to either format."
-    (interactive "sType (v) for verbose date | (t) for time: ")
-    (if (string-match-p "v" str)
-        (insert (format-time-string "%B %e, %Y"))
-      (insert (format-time-string "%Y-%m-%d")))
-    (when (string-match-p "t" str)
-      (insert (format-time-string " %T"))))
+     ;; Global
+     (defun insert-date (str)
+       "Insert current date in ISO 8601.
+         Typing 'v' will insert the current date verbosely.
+         Typing 't' will append the time in H:M:S to either format."
+       (interactive "sType (v) for verbose date | (t) for time: ")
+       (if (string-match-p "v" str)
+           (insert (format-time-string "%B %e, %Y"))
+         (insert (format-time-string "%Y-%m-%d")))
+       (when (string-match-p "t" str)
+         (insert (format-time-string " %T"))))
 
-  (define-skeleton insert-iso-date-skeleton
-    "Skeleton wrapper for INSERT-DATE"
-    "ISO Date"
-    '(insert-date ""))
+     (define-skeleton insert-iso-date-skeleton
+       "Skeleton wrapper for INSERT-DATE"
+       "ISO Date"
+       '(insert-date ""))
 
-  (define-skeleton insert-verbose-date-skeleton
-    "Skeleton wrapper for INSERT-DATE"
-    "Verbose Date"
-    '(insert-date "v"))
+     (define-skeleton insert-verbose-date-skeleton
+       "Skeleton wrapper for INSERT-DATE"
+       "Verbose Date"
+       '(insert-date "v"))
 
-  ;; C
-  (define-skeleton c-skeleton-hello
-    "Inserts a simple 'hello-world' program in C."
-    "Name: "
-    "#include<stdio.h>\n\n"
-    "int main (int argc, char *argv[]) {\n"
-    _  >"printf(\"%s\", \"Hello world.\\n\");\n"
-    >"return 0;\n"
-    "}\n")
+     ;; C
+     (define-skeleton c-skeleton-hello
+       "Inserts a simple 'hello-world' program in C."
+       "Name: "
+       "#include<stdio.h>\n\n"
+       "int main (int argc, char *argv[]) {\n"
+       _  >"printf(\"%s\", \"Hello world.\\n\");\n"
+       >"return 0;\n"
+       "}\n")
 
-  ;; Org
-  (define-skeleton org-skeleton-header
-    "Insert document headers."
-    "Title: "
-    "#+TITLE: " str | (buffer-name) "\n"
-    "#+AUTHOR: " (user-full-name) "\n"
-    "#+DATE: " (insert-date "v") "\n"
-    "#+OPTIONS: ':true *:true toc:nil num:nil" _)
+     ;; Org
+     (define-skeleton org-skeleton-header
+       "Insert document headers."
+       "Title: "
+       "#+TITLE: " str | (buffer-name) "\n"
+       "#+AUTHOR: " (user-full-name) "\n"
+       "#+DATE: " (insert-date "v") "\n"
+       "#+OPTIONS: ':true *:true toc:nil num:nil" _)
 
-  (define-skeleton org-skeleton-latex-header
-    "Insert document headers and essential LaTeX header options."
-    "options"
-    '(org-skeleton-header)
-    "\n#+LaTeX_HEADER: \\renewcommand{\\thesection}{\\hspace*{-1.0em}}\n"
-    "#+LaTeX_HEADER: \\renewcommand{\\thesubsection}{\\hspace*{-1.0em}}\n"
-    "#+LaTeX_HEADER: \\setlength{\\parindent}{0pt}\n"
-    "#+LaTeX_HEADER: \\usepackage[margin=1in]{geometry}\n" _)
+     (define-skeleton org-skeleton-latex-header
+       "Insert document headers and essential LaTeX header options."
+       "options"
+       '(org-skeleton-header)
+       "\n#+LaTeX_HEADER: \\renewcommand{\\thesection}{\\hspace*{-1.0em}}\n"
+       "#+LaTeX_HEADER: \\renewcommand{\\thesubsection}{\\hspace*{-1.0em}}\n"
+       "#+LaTeX_HEADER: \\setlength{\\parindent}{0pt}\n"
+       "#+LaTeX_HEADER: \\usepackage[margin=1in]{geometry}\n" _)
 
-  ;; LaTeX
-  (define-skeleton latex-skeleton-begin
-    "Insert a LaTeX BEGIN block."
-    "Block type: "
-    "\\begin{" str | "align*" "}\n" _ "\n\\end{" str | "align*" "}\n")
+     ;; LaTeX
+     (define-skeleton latex-skeleton-begin
+       "Insert a LaTeX BEGIN block."
+       "Block type: "
+       "\\begin{" str | "align*" "}\n" _ "\n\\end{" str | "align*" "}\n")
 
-  ;; BibTeX
-  (defun bibtex-insert-citation (str)
-    "Insert a BibTeX citation.
-    Begin by inserting the citation type, then call
-    BIBTEX-SKELETON-CITATION to prompt for a label and insert the rest."
-    (interactive "s(a)rticle | (b)ook | (c)ollection | (w)ebsite: ")
-    (let ((type))
-      (cond ((string-match-p "^a\\|rticle" str)
-             (setq type "article"))
-            ((string-match-p "^b\\|ook" str)
-             (setq type "book"))
-            ((string-match-p "^c\\|ollection" str)
-             (setq type "incollection"))
-            ((string-match-p "^w\\|ebsite" str)
-             (setq type "misc")))
-      (insert "@"type"{"))
-    (bibtex-skeleton-citation))
+     ;; BibTeX
+     (defun bibtex-insert-citation (str)
+       "Insert a BibTeX citation.
+       Begin by inserting the citation type, then call
+       BIBTEX-SKELETON-CITATION to prompt for a label and insert the rest."
+       (interactive "s(a)rticle | (b)ook | (c)ollection | (w)ebsite: ")
+       (let ((type))
+         (cond ((string-match-p "^a\\|rticle" str)
+                (setq type "article"))
+               ((string-match-p "^b\\|ook" str)
+                (setq type "book"))
+               ((string-match-p "^c\\|ollection" str)
+                (setq type "incollection"))
+               ((string-match-p "^w\\|ebsite" str)
+                (setq type "misc")))
+         (insert "@"type"{"))
+       (bibtex-skeleton-citation))
 
-  (define-skeleton bibtex-skeleton-citation
-    "Insert the contents of a BibTeX citation starting with the label."
-    "Label: "
-    str | "label" ",\n"
-    >"author     = \"\",\n"
-    >"title      = \"\",\n"
-    >"%journal   = \"\",\n"
-    >"%booktitle = \"\",\n"
-    >"%publisher = \"\",\n"
-    >"%editor    = \"\",\n"
-    >"%volume    = \"\",\n"
-    >"%number    = \"\",\n"
-    >"%series    = \"\",\n"
-    >"%edition   = \"\",\n"
-    >"%address   = \"\",\n"
-    >"%type      = \"\",\n"
-    >"%chapter   = \"\",\n"
-    >"%pages     = \"\",\n"
-    >"%year      = \"\",\n"
-    >"%month     = \"\",\n"
-    >"%url       = \"\",\n"
-    >"note       = \"Accessed " '(insert-date "t") "\",\n"
-    "},\n" _
-    )
+     (define-skeleton bibtex-skeleton-citation
+       "Insert the contents of a BibTeX citation starting with the label."
+       "Label: "
+       str | "label" ",\n"
+       >"author     = \"\",\n"
+       >"title      = \"\",\n"
+       >"%journal   = \"\",\n"
+       >"%booktitle = \"\",\n"
+       >"%publisher = \"\",\n"
+       >"%editor    = \"\",\n"
+       >"%volume    = \"\",\n"
+       >"%number    = \"\",\n"
+       >"%series    = \"\",\n"
+       >"%edition   = \"\",\n"
+       >"%address   = \"\",\n"
+       >"%type      = \"\",\n"
+       >"%chapter   = \"\",\n"
+       >"%pages     = \"\",\n"
+       >"%year      = \"\",\n"
+       >"%month     = \"\",\n"
+       >"%url       = \"\",\n"
+       >"note       = \"Accessed " '(insert-date "t") "\",\n"
+       "},\n" _
+       )
 
-  (define-skeleton bibtex-skeleton-insert-citation
-    "Skeleton wrapper for BIBTEX-INSERT-CITATION"
-    "(a)rticle | (b)ook | (c)ollection | (w)ebsite: "
-    "(bibtex-insert-citation \"" str "\")"_)
+     (define-skeleton bibtex-skeleton-insert-citation
+       "Skeleton wrapper for BIBTEX-INSERT-CITATION"
+       "(a)rticle | (b)ook | (c)ollection | (w)ebsite: "
+       "(bibtex-insert-citation \"" str "\")"_)
 
-  ;; JavaScript
-  (define-skeleton js-skeleton-jest
-    "Inserts a test block for jest."
-    "Name: "
-    _"('', () => {\n"
-    >"\n"
-    "});\n")
+     ;; JavaScript
+     (define-skeleton js-skeleton-jest
+       "Inserts a test block for jest."
+       "Name: "
+       _"('', () => {\n"
+       >"\n"
+       "});\n")
+
+     ;; Go
+     (define-skeleton go-err-check
+       "Go error check boilerplate"
+       "Name: "
+       "if err != nil {\n"
+       > _"\n"
+       "}\n")
    #+END_SRC
 
 ** Abbrev Mode
@@ -1248,43 +1250,48 @@ pip install flake8
    Expansions can be either global or local to a specific major mode.
 
    #+BEGIN_SRC emacs-lisp
-  ;; enable abbrev for all buffers
-  (use-package abbrev
-    :diminish ""
-    :init
-    (setq-default abbrev-mode t))
+     ;; enable abbrev for all buffers
+     (use-package abbrev
+       :diminish ""
+       :init
+       (setq-default abbrev-mode t))
 
-  ;; Abbrev Tables
-  (define-abbrev-table 'global-abbrev-table
-    '(
-      ("8date" "" insert-iso-date-skeleton 0)
-      ("8today" "" insert-verbose-date-skeleton 0)
-      ))
+     ;; Abbrev Tables
+     (define-abbrev-table 'global-abbrev-table
+       '(
+         ("8date" "" insert-iso-date-skeleton 0)
+         ("8today" "" insert-verbose-date-skeleton 0)
+         ))
 
-  (define-abbrev-table 'c-mode-abbrev-table
-    '(
-      ("8hello" "" c-skeleton-hello 0)
-      ))
+     (define-abbrev-table 'c-mode-abbrev-table
+       '(
+         ("8hello" "" c-skeleton-hello 0)
+         ))
 
-  (define-abbrev-table 'org-mode-abbrev-table
-    '(
-      ("8header" "" org-skeleton-header 0)
-      ("8lheader" "" org-skeleton-latex-header 0)
-      ("8begin" "" latex-skeleton-begin 0)
-      ))
+     (define-abbrev-table 'org-mode-abbrev-table
+       '(
+         ("8header" "" org-skeleton-header 0)
+         ("8lheader" "" org-skeleton-latex-header 0)
+         ("8begin" "" latex-skeleton-begin 0)
+         ))
 
-  (define-abbrev-table 'bibtex-mode-abbrev-table
-    '(
-      ("8cite" "" bibtex-skeleton-insert-citation 0)
-      ))
+     (define-abbrev-table 'bibtex-mode-abbrev-table
+       '(
+         ("8cite" "" bibtex-skeleton-insert-citation 0)
+         ))
 
-  (define-abbrev-table 'js2-mode-abbrev-table
-    '(
-      ("8jest" "" js-skeleton-jest 0)
-      ))
+     (define-abbrev-table 'js2-mode-abbrev-table
+       '(
+         ("8jest" "" js-skeleton-jest 0)
+         ))
 
-  ;; stop asking whether to save newly added abbrev when quitting emacs
-  (setq save-abbrevs nil)
+     (define-abbrev-table 'go-mode-abbrev-table
+       '(
+         ("8err" "" go-err-check 0)
+         ))
+
+     ;; stop asking whether to save newly added abbrev when quitting emacs
+     (setq save-abbrevs nil)
    #+END_SRC
 
 **** Editing Abbrevs
