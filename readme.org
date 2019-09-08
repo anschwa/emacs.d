@@ -567,17 +567,24 @@
    error checking.
 
    #+BEGIN_SRC sh
+     aptitude install python-virtualenv pipenv
      pip3 install jedi flake8 black
    #+END_SRC
-
-   I was using jedi with company for auto-completion, but now I mostly
-   only care about automatic code formatting.
 
    #+BEGIN_SRC emacs-lisp
      (use-package blacken
        :ensure t
-       :hook ((python-mode . blacken-mode)))
+       :hook ((python-mode . blacken-mode)
+              (python-mode . flymake-mode))
+       :config
+       (setq jedi:use-shortcuts t))
    #+END_SRC
+
+   For jump-to-definition and auto-completion, you can use
+   =jedi-mode=. I prefer to start the jedi server only when I need it.
+   1. =M-x jedi:install-server=
+   2. =M-x jedi-mode=
+   3. =jedi:goto-definition=
 
 ** Ruby
    #+BEGIN_SRC emacs-lisp
