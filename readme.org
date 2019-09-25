@@ -197,6 +197,9 @@
 
     ;; Don't write lock-files, I'm the only one here
     (setq create-lockfiles nil)
+
+    ;; Improve performance of very long lines
+    (setq-default bidi-display-reordering 'left-to-right)
   #+END_SRC
 ** Better Package Defaults
    #+BEGIN_SRC emacs-lisp
