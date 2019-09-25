@@ -572,10 +572,19 @@
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
+     (use-package python
+       :config
+       (setq python-shell-interpreter "python3")
+       (setq python-environment-virtualenv
+             (append python-environment-virtualenv
+                     '("--python" "/usr/bin/python3"))))
+
      (use-package blacken
        :ensure t
-       :hook ((python-mode . blacken-mode)
-              (python-mode . flymake-mode))
+       :hook ((python-mode . blacken-mode)))
+
+     (use-package jedi
+       :ensure t
        :config
        (setq jedi:use-shortcuts t))
    #+END_SRC
@@ -1084,15 +1093,15 @@
 ** Flycheck
    [[https://github.com/flycheck/flycheck][Flycheck]] is a great modern syntax checker.
    #+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :commands (flycheck-add-mode)
-    ;; :diminish ""
-    :config
-    (setq flycheck-indication-mode 'left-fringe)
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc javascript-jshint))
-    (flycheck-add-mode 'javascript-eslint 'js2-mode)
-    (global-flycheck-mode 1))
+     (use-package flycheck
+       :ensure t
+       :commands (flycheck-add-mode)
+       ;; :diminish ""
+       :config
+       (setq flycheck-indication-mode 'left-fringe)
+       (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc javascript-jshint))
+       (flycheck-add-mode 'javascript-eslint 'js2-mode)
+       (global-flycheck-mode 1))
    #+END_SRC
 
 ** Multiple Cursors
