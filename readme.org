@@ -1519,57 +1519,68 @@
   (bind-key "<tab>" 'smart-tab)
    #+END_SRC
 ** Toggle Quotes
-#+BEGIN_SRC emacs-lisp
-  (defun my/get-quote-chars ()
-    "get available string symbols from the active syntax-table"
-    (let ((quotes '(?\' ?\" ?\`)))
-      (seq-filter (lambda (q) (eq (char-syntax q) 34)) quotes))))
+   #+BEGIN_SRC emacs-lisp
+     (defun my/get-quote-chars ()
+       "get available string symbols from the active syntax-table"
+       (let ((quotes '(?\' ?\" ?\`)))
+         (seq-filter (lambda (q) (eq (char-syntax q) 34)) quotes))))
 
-  (defun my/toggle-quotes ()
-    "toggles a string between quote levels when in most programming modes"
-    (interactive)
-    (let* ((beg (nth 8 (syntax-ppss)))
-           (orig-quote (char-after beg))
-           (quotes (my/get-quote-chars))
-           (new-quote (case (length quotes)
-                        (1 (when (eq orig-quote (car quotes))
-                             (car quotes)))
-                        (2 (cond
-                            ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
-                            ((eq orig-quote (nth 1 quotes)) (nth 0 quotes))))
-                        (3 (cond
-                            ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
-                            ((eq orig-quote (nth 1 quotes)) (nth 2 quotes))
-                            ((eq orig-quote (nth 2 quotes)) (nth 0 quotes)))))))
-      (save-restriction
-        (widen)
-        (save-excursion
-          (catch 'done
-            (unless new-quote
-              (message "Not inside a string")
-              (throw 'done nil))
-            (goto-char beg)
-            (delete-char 1)
-            (insert-char new-quote)
-            (while t
-              (cond ((eobp)
-                     (throw 'done nil))
-                    ((= (char-after) orig-quote)
-                     (delete-char 1)
-                     (insert-char new-quote)
-                     (throw 'done nil))
-                    ((= (char-after) ?\\)
-                     (forward-char 1)
-                     (when (= (char-after) orig-quote)
-                       (delete-char -1))
-                     (forward-char 1))
-                    ((= (char-after) new-quote)
-                     (insert-char ?\\)
-                     (forward-char 1))
-                    (t (forward-char 1)))))))))
+     (defun my/toggle-quotes ()
+       "toggles a string between quote levels when in most programming modes"
+       (interactive)
+       (let* ((beg (nth 8 (syntax-ppss)))
+              (orig-quote (char-after beg))
+              (quotes (my/get-quote-chars))
+              (new-quote (case (length quotes)
+                           (1 (when (eq orig-quote (car quotes))
+                                (car quotes)))
+                           (2 (cond
+                               ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
+                               ((eq orig-quote (nth 1 quotes)) (nth 0 quotes))))
+                           (3 (cond
+                               ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
+                               ((eq orig-quote (nth 1 quotes)) (nth 2 quotes))
+                               ((eq orig-quote (nth 2 quotes)) (nth 0 quotes)))))))
+         (save-restriction
+           (widen)
+           (save-excursion
+             (catch 'done
+               (unless new-quote
+                 (message "Not inside a string")
+                 (throw 'done nil))
+               (goto-char beg)
+               (delete-char 1)
+               (insert-char new-quote)
+               (while t
+                 (cond ((eobp)
+                        (throw 'done nil))
+                       ((= (char-after) orig-quote)
+                        (delete-char 1)
+                        (insert-char new-quote)
+                        (throw 'done nil))
+                       ((= (char-after) ?\\)
+                        (forward-char 1)
+                        (when (= (char-after) orig-quote)
+                          (delete-char -1))
+                        (forward-char 1))
+                       ((= (char-after) new-quote)
+                        (insert-char ?\\)
+                        (forward-char 1))
+                       (t (forward-char 1)))))))))
 
-  (bind-key "C-c '" 'my/toggle-quotes)
-#+END_SRC
+     (bind-key "C-c '" 'my/toggle-quotes)
+   #+END_SRC
+
+** Eval and Replace
+   #+BEGIN_SRC emacs-lisp
+     (defun my/replace-last-sexp ()
+         (interactive)
+         (let ((value (eval (preceding-sexp))))
+           (kill-sexp -1)
+           (insert (format "%S" value))))
+
+     (bind-key "C-c e r" 'my/replace-last-sexp)
+   #+END_SRC
 * Miscellaneous
 ** macOS
    Unique configurations and path reassignments.
