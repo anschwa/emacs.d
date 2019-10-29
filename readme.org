@@ -1254,6 +1254,11 @@
        >"\n"
        "});\n")
 
+     (define-skeleton js-skeleton-log
+       "Inserts console.log()"
+       "Name: "
+       "console.log("_")"\n)
+
      ;; Go
      (define-skeleton go-err-check
        "Go error check boilerplate"
@@ -1302,6 +1307,12 @@
      (define-abbrev-table 'js2-mode-abbrev-table
        '(
          ("8jest" "" js-skeleton-jest 0)
+         ("8log" "" js-skeleton-log 0)
+         ))
+
+     (define-abbrev-table 'web-mode-abbrev-table
+       '(
+         ("8log" "" js-skeleton-log 0)
          ))
 
      (define-abbrev-table 'go-mode-abbrev-table
