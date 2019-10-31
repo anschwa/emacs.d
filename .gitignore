@@ -15,7 +15,6 @@ ac-comphist.dat
 auto-save-list
 backups
 bookmarks
-custom.el
 emms
 games
 ido.last
@@ -31,3 +30,4 @@ tramp
 transient/
 url
 viper
+.lsp*

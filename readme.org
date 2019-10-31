@@ -748,34 +748,44 @@
    #+END_SRC
 
 ** Go
+   I used to run =goimports= on save, but it would occasional cause
+   Emacs to lock up for several seconds when working on large projects
+   using =modules= outside of =GOPATH=.
+
+   Fortunately, =gofmt= is always fast and =gopls= is able to
+   automatically add imports on-the-fly.
+
    #+BEGIN_SRC sh
-   go get -u golang.org/x/tools/cmd/goimports
-   go get -u github.com/mdempsky/gocode
-   go get -u github.com/rogpeppe/godef
+     go get -u golang.org/x/tools/gopls
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
-     (use-package go-eldoc
-       :ensure t
-       :hook ((go-mode . go-eldoc-setup)))
-
-     (use-package company-go
-       :ensure t
-       :config
-       (add-to-list 'company-backends 'company-go))
-
      (use-package go-mode
        :ensure t
-       :bind (:map go-mode-map
-                   ("M-." . godef-jump))
        :config
        (defun my/go-mode-hook ()
-         (setq gofmt-command "goimports")
          (add-hook 'before-save-hook 'gofmt-before-save)
-         (setq-default indent-tabs-mode nil)
-         (setq-default tab-width 4)
-         (setq-default indent-line-function 'insert-tab))
+         (setq-default tab-width 4))
        :hook ((go-mode . my/go-mode-hook)))
+
+     (use-package lsp-ui
+       :ensure t
+       :init
+       (setq lsp-ui-doc-enable nil))
+
+     (use-package company-lsp
+       :ensure t)
+
+     (use-package lsp-mode
+       :ensure t
+       :hook (go-mode . lsp)
+       :commands lsp
+       :bind (:map lsp-mode-map
+                   ("C-c d" . lsp-describe-thing-at-point)
+                   ("C-c f" . lsp-find-references)
+                   ("C-c RET" . lsp-ui-sideline-apply-code-actions))
+       :init
+       (setq lsp-enable-snippet nil))
    #+END_SRC
 
 ** ProtoBuf
