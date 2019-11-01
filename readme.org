@@ -693,13 +693,13 @@
    [[https://github.com/mooz/js2-mode][js2-mode]] provides better js editing and ECMAScript 2015 support.
 
    #+BEGIN_SRC emacs-lisp
-  (use-package js2-mode
-    :ensure t
-    :mode ("\\.js\\'")
-    :interpreter "node"
-    :config
-    (setq js-indent-level 2)
-    (setq js2-global-externs '("JSON" "jest" "describe" "it" "expect" "beforeEach" "beforeAll" "afterEach" "afterAll")))
+     (use-package js2-mode
+       :ensure t
+       :mode ("\\.js\\'")
+       :interpreter "node"
+       :config
+       (setq js-indent-level 2)
+       (setq js2-global-externs '("JSON" "jest" "describe" "it" "expect" "beforeEach" "beforeAll" "afterEach" "afterAll" "process")))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
