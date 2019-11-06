@@ -39,6 +39,11 @@
 
 * Package Management
 ** Package Sources
+   Temporary fix for emacs < 26.3
+   #+BEGIN_SRC emacs-lisp
+     (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+   #+END_SRC
+
    #+BEGIN_SRC emacs-lisp
      (require 'package)
      (add-to-list 'package-archives
@@ -847,12 +852,14 @@
    [[https://github.com/magit/magit][Magit]] is the ultimate =git= interface for Emacs.
 
    #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t
-    :commands (magit-section-toggle)
-    :diminish magit-auto-revert-mode
-    :bind (:map magit-mode-map
-                ("<tab>" . magit-section-toggle)))
+     (use-package magit
+       :ensure t
+       :commands (magit-section-toggle)
+       :diminish magit-auto-revert-mode
+       :bind (:map magit-mode-map
+                   ("<tab>" . magit-section-toggle))
+       :config
+       (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
    #+END_SRC
 
 ** Ediff
