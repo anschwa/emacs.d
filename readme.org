@@ -1619,6 +1619,12 @@
 
      (bind-key "C-u" 'my/backward-kill-line shell-mode-map)
    #+END_SRC
+** Remove Secondary Selection
+   #+BEGIN_SRC emacs-lisp
+     (defun my/unset-secondary-selection ()
+       (interactive)
+       (delete-overlay mouse-secondary-overlay))
+   #+END_SRC
 * Miscellaneous
 ** macOS
    Unique configurations and path reassignments.
