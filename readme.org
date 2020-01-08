@@ -480,7 +480,13 @@
 
        ;; Custom TODO keywords
        (setq org-todo-keywords
-             '((sequence "TODO(t)" "NOW(n@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+             '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)" "CANCELED(c@)")))
+       (setq org-todo-keywords-faces
+             '(("TODO" :foreground "red" :weight bold)
+               ("NEXT :foreground "blue :weight bold)
+               ("DONE :foreground "forest green :weight bold)
+               ("CANCELED" :foreground "forest green" :weight bold)))
+
 
        ;; setup org-capture
        ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
@@ -496,7 +502,8 @@
         '((emacs-lisp . t)
           (python . t)
           (haskell . t)
-          (C . t)))
+          (C . t)
+          (shell . t)))
 
        ;; Set up latex
        (setq org-export-with-LaTeX-fragments t)
