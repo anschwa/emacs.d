@@ -711,7 +711,18 @@
        :interpreter "node"
        :config
        (setq js-indent-level 2)
-       (setq js2-global-externs '("JSON" "jest" "describe" "it" "expect" "beforeEach" "beforeAll" "afterEach" "afterAll" "process")))
+       (setq js2-global-externs '("JSON"
+                                  "jest"
+                                  "describe"
+                                  "it"
+                                  "expect"
+                                  "beforeEach"
+                                  "beforeAll"
+                                  "afterEach"
+                                  "afterAll"
+                                  "process"
+                                  "module"
+                                  "require")))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
@@ -764,8 +775,8 @@
    Emacs to lock up for several seconds when working on large projects
    using =modules= outside of =GOPATH=.
 
-   Fortunately, =gofmt= is always fast and =gopls= is able to
-   automatically add imports on-the-fly.
+   Fortunately, =gofmt= is always fast and =gopls= is able to add
+   imports on-the-fly.
 
    #+BEGIN_SRC sh
      go get -u golang.org/x/tools/gopls
@@ -798,6 +809,11 @@
                    ("C-c RET" . lsp-ui-sideline-apply-code-actions))
        :init
        (setq lsp-enable-snippet nil))
+
+     ;; add struct field tags for json, yaml, etc.
+     ;; mark a region and execute M-x go-add-tags <RET>
+     (use-package go-add-tags
+       :ensure t)
    #+END_SRC
 
 ** ProtoBuf
