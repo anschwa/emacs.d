@@ -1364,6 +1364,10 @@
      (setq save-abbrevs nil)
    #+END_SRC
 
+*** Editing Abbrevs
+     The easiest way to add or remove =abbrev= expansions is to
+     =M-x edit-abbrevs=, =C-c C-c= to save, then =write-abbrev-file= to store.
+
 ** Git Link
    [[https://github.com/sshaw/git-link][git-link]] will open your web browser to a specific line or region of a file under source control.
    #+BEGIN_SRC emacs-lisp
@@ -1372,10 +1376,14 @@
        :config
        (setq git-link-open-in-browser t))
    #+END_SRC
+** String Inflection
+Toggle between snake, camel, and kebab cases.
 
-**** Editing Abbrevs
-     The easiest way to add or remove =abbrev= expansions is to
-     =M-x edit-abbrevs=, =C-c C-c= to save, then =write-abbrev-file= to store.
+#+BEGIN_SRC emacs-lisp
+  (use-package string-inflection
+    :ensure t
+    :bind ("C-c C-u" . string-inflection-all-cycle))
+#+END_SRC
 
 * Custom Functions
 ** Move lines up or down
