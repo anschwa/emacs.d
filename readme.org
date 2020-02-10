@@ -491,10 +491,10 @@
        ;; setup org-capture
        ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
        (setq org-capture-templates
-             `(("t" "Tasks" entry (file+headline ,(concat org-directory "/todo.org") "Tasks")
+             `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
                 "* TODO %?\n %U\n  %i\n  %a")
                ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
-                "* %?\n %i\n")))
+                "* %?\n %U\n %i\n")))
 
        ;; Set up babel source-block execution
        (org-babel-do-load-languages
