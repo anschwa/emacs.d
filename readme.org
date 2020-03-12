@@ -2,7 +2,7 @@
 #+OPTIONS: ':true *:true num:nil
 * Description
   This configuration is designed for Emacs 25 and above. This file
-  includes everything required to setup my complete environment.
+  includes everything required to setup my environment.
 
   If starting Emacs for the first time using this configuration, you
   may need to do the following:
