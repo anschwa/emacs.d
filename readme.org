@@ -383,7 +383,6 @@
 
         (custom-theme-set-faces
          'stoneware
-
          `(default             ((t (:foreground ,base05 :background ,base00))))
          `(cursor              ((t (:foreground ,base00 :background ,base05))))
          `(region              ((t (:background ,base02))))
@@ -397,12 +396,12 @@
          `(mode-line-inactive  ((t (:foreground ,base06 :background ,base01 :box nil))))
          `(line-number         ((t (:foreground ,base06))))
 
-      ;; enable minimal syntax highlighting
+      ;;; enable minimal syntax highlighting
          '(font-lock-builtin-face ((t (:weight bold))))
-         '(font-lock-string-face  ((t (:weight bold :slant normal))))
          `(font-lock-comment-face ((t (:foreground ,base04))))
 
       ;;; disable unwanted styles
+         '(font-lock-string-face        ((t nil)))
          '(font-lock-constant-face      ((t nil)))
          '(font-lock-function-name-face ((t nil)))
          '(font-lock-keyword-face       ((t nil)))
@@ -801,8 +800,8 @@
 
      (use-package lsp-mode
        :ensure t
-       :hook (go-mode . lsp)
-       :commands lsp
+       :commands lsp-deferred
+       :hook (go-mode . lsp-deferred)
        :bind (:map lsp-mode-map
                    ("C-c d" . lsp-describe-thing-at-point)
                    ("C-c f" . lsp-find-references)
