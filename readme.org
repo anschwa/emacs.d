@@ -904,13 +904,11 @@
    [[http://www.emacswiki.org/emacs/DiredMode][Dired]] is a powerful file manager.
 
    #+BEGIN_SRC emacs-lisp
-  (use-package dired-x ; Enable some nice dired features
-    :config
-    ;; Omit hidden files by default (C-x M-o to show them)
-    (setq-default dired-omit-files-p t)
-    (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$")
-          dired-omit-verbose nil)
-    :hook ((dired-after-readin . hl-line-mode)))
+     (use-package dired
+       :config
+       (setq dired-dwim-target t)
+       (setq dired-listing-switches "-alp") ; ls flags
+       :hook ((dired-after-readin . hl-line-mode)))
    #+END_SRC
 
 ** Ibuffer
