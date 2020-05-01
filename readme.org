@@ -379,7 +379,8 @@
             (base03 "#f8df9c")  ; line highlighting
             (base04 "#5c5c5c")  ; dark foreground
             (base05 "#000000")  ; default foreground
-            (base06 "#a3a3a3")) ; light foreground
+            (base06 "#a3a3a3")  ; light foreground
+            (base07 "#a52a2a")) ; accented foreground
 
         (custom-theme-set-faces
          'stoneware
@@ -399,9 +400,9 @@
       ;;; enable minimal syntax highlighting
          '(font-lock-builtin-face ((t (:weight bold))))
          `(font-lock-comment-face ((t (:foreground ,base04))))
+         `(font-lock-string-face  ((t (:foreground ,base07))))
 
       ;;; disable unwanted styles
-         '(font-lock-string-face        ((t nil)))
          '(font-lock-constant-face      ((t nil)))
          '(font-lock-function-name-face ((t nil)))
          '(font-lock-keyword-face       ((t nil)))
