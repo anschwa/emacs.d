@@ -932,7 +932,7 @@
        (let ((inhibit-read-only t))
          (erase-buffer)))
 
-     ;; Nice fish shell style
+     ;; Nice fish style prompt
      (defun fish-path (path max-len)
        "Return a potentially trimmed-down version of the directory PATH, replacing
      parent directories with their initial characters to try to get the character
@@ -961,10 +961,18 @@
        (concat (concat (fish-path (eshell/pwd) 40) "\n")
                (if (= (user-uid) 0) " # " " $ ")))
 
-     ;; set multiline prompt
-     (setq-default eshell-prompt-regexp "^[:space:][#\\|$][:space:]"
-                   eshell-prompt-function
-                   'fish-eshell-prompt-function)
+
+     ;; Set prompt and stop eshell from scrolling to the bottom of the
+     ;; buffer after executing a command
+     (use-package eshell
+       :config
+       (remove-hook 'eshell-output-filter-functions 'eshell-postoutput-scroll-to-bottom)
+       :init
+       (setq-default eshell-prompt-regexp "^[:space:][#\\|$][:space:]"
+                     eshell-prompt-function
+                     'fish-eshell-prompt-function)
+       (setq eshell-scroll-show-maximum-output nil)
+       (setq eshell-scroll-to-bottom-on-output nil))
    #+END_SRC
 
 ** ERC
