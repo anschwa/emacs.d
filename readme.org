@@ -802,6 +802,7 @@ go get -u golang.org/x/tools/gopls
 
 (use-package lsp-mode
   :ensure t
+  :diminish
   :commands lsp-deferred
   :hook (go-mode . lsp-deferred)
   :bind (:map lsp-mode-map
@@ -1036,7 +1037,7 @@ Comprehensive PDF viewer and annotation tool.
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
-  ;; :diminish ""
+  :diminish
   :config
   (global-company-mode 1))
 #+END_SRC
@@ -1107,7 +1108,7 @@ Enable spell-checking in Emacs using [[http://aspell.net/][Aspell]]
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
   :ensure t
-  ;; :diminish ""
+  :diminish
   :config
   (setq flyspell-issue-welcome-flag nil)
   (setq flyspell-issue-message-flag nil)
@@ -1141,12 +1142,12 @@ However, I do not want to highlight duplicate words.
 #+END_SRC
 
 ** Flycheck
-[[https://github.com/flycheck/flycheck][Flycheck]] is a great modern syntax checker.
+[[https://github.com/flycheck/flycheck][Flycheck]] manages your linting programs in each buffer.
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
   :commands (flycheck-add-mode)
-  ;; :diminish ""
+  :diminish
   :config
   (setq flycheck-indication-mode 'left-fringe)
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc javascript-jshint))
@@ -1383,6 +1384,13 @@ The easiest way to add or remove =abbrev= expansions is to
   :config
   (setq git-link-open-in-browser t))
 #+END_SRC
+
+** Eldoc
+#+BEGIN_SRC emacs-lisp
+(use-package eldoc
+  :diminish)
+#+END_SRC
+
 ** String Inflection
 Toggle between snake, camel, and kebab cases.
 
