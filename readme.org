@@ -593,7 +593,11 @@ pip3 install jedi flake8 black
   (setq python-shell-interpreter "python3")
   (setq python-environment-virtualenv
         (append python-environment-virtualenv
-                '("--python" "/usr/bin/python3"))))
+                '("--python" "/usr/bin/python3")))
+  (defun my/python-mode-hook ()
+    (set (make-local-variable 'compile-command)
+         (format "python %s" (file-name-nondirectory buffer-file-name))))
+  :hook ((python-mode . my/python-mode-hook)))
 
 (use-package blacken
   :ensure t
@@ -617,7 +621,11 @@ For jump-to-definition and auto-completion, you can use
   :ensure t
   :config
   (setq ruby-align-to-stmt-keywords nil)
-  (setq ruby-insert-encoding-magic-comment nil))
+  (setq ruby-insert-encoding-magic-comment nil)
+  (defun my/ruby-mode-hook ()
+    (set (make-local-variable 'compile-command)
+         (format "ruby %s" (file-name-nondirectory buffer-file-name))))
+  :hook ((ruby-mode . my/ruby-mode-hook)))
 #+END_SRC
 
 *** Rails
@@ -723,7 +731,11 @@ For jump-to-definition and auto-completion, you can use
                              "afterAll"
                              "process"
                              "module"
-                             "require")))
+                             "require"))
+  (defun my/js-mode-hook ()
+    (set (make-local-variable 'compile-command)
+         (format "node %s" (file-name-nondirectory buffer-file-name))))
+  :hook ((js-mode . my/js-mode-hook)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -783,13 +795,16 @@ imports on-the-fly.
 go get -u golang.org/x/tools/gopls
 #+END_SRC
 
+Run =go fmt= on save and run tests using =M-x compile=.
 #+BEGIN_SRC emacs-lisp
 (use-package go-mode
   :ensure t
   :config
   (defun my/go-mode-hook ()
+    (setq-default tab-width 4)
     (add-hook 'before-save-hook 'gofmt-before-save)
-    (setq-default tab-width 4))
+    (set (make-local-variable 'compile-command)
+         "go test && go vet"))
   :hook ((go-mode . my/go-mode-hook)))
 
 (use-package lsp-ui
@@ -1063,7 +1078,9 @@ See also [[https://github.com/abo-abo/ace-window][ace-window]] and [[https://git
   #+END_SRC
 
 ** Silver Searcher
-[[https://github.com/Wilfred/ag.el][ag.el]] is an Emacs front-end to [[https://github.com/ggreer/the_silver_searcher][ag]], "the silver searcher".
+[[https://github.com/Wilfred/ag.el][ag.el]] is an Emacs front-end to [[https://github.com/ggreer/the_silver_searcher][ag]], "the silver searcher". I think
+=ag-project= is a bit more ergonomic than =rgrep=.
+
 #+BEGIN_SRC emacs-lisp
 (use-package ag
   :ensure t
@@ -1071,6 +1088,18 @@ See also [[https://github.com/abo-abo/ace-window][ace-window]] and [[https://git
   (setq ag-reuse-buffers t)
   (setq ag-reuse-window t)
   :hook ((ag-mode . hl-line-mode)))
+#+END_SRC
+
+** Wgrep
+Like =wdired= for =rgrep= and =ag-project=.
+
+- =C-c C-p= to enable (=wgrep-change-to-wgrep-mode=)
+- =C-c C-c= to execute
+- =C-c C-k= to abort
+
+#+BEGIN_SRC emacs-lisp
+(use-package wgrep-ag
+  :ensure t)
 #+END_SRC
 
 ** Dumb-Jump
