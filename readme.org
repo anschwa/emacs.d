@@ -1099,7 +1099,9 @@ Like =wdired= for =rgrep= and =ag-project=.
 
 #+BEGIN_SRC emacs-lisp
 (use-package wgrep-ag
-  :ensure t)
+  :ensure t
+  :config
+  (setq wgrep-auto-save-buffer t))
 #+END_SRC
 
 ** Dumb-Jump
