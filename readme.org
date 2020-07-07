@@ -775,8 +775,14 @@ For jump-to-definition and auto-completion, you can use
       ;; turn on js2-mode for this region. (and narrow)
       (call-interactively #'my/js2-mode-on-region)))
 
+  (defun my/widen-from-javascript ()
+    "Undo the effects of `my/narrow-to-javascript'."
+    (interactive)
+    (widen)
+    (web-mode))
+
   :bind (:map js2-mode-map
-              ("C-c w" . widen))
+              ("C-c w" . my/widen-from-javascript))
   :hook ((js-mode . my/js-mode-hook)))
 
 (use-package web-mode
