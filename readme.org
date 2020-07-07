@@ -735,7 +735,53 @@ For jump-to-definition and auto-completion, you can use
   (defun my/js-mode-hook ()
     (set (make-local-variable 'compile-command)
          (format "node %s" (file-name-nondirectory buffer-file-name))))
+
+  (defun my/js2-mode-on-region (start end)
+    "Narrow on the active region, then turn on js2-mode."
+    (interactive "r")
+    (deactivate-mark)
+    (narrow-to-region start end)
+    (js2-mode))
+
+  (defun my/narrow-to-javascript ()
+    "Automatcially narrow between <script> tags, then turn on js2-mode."
+    (interactive)
+    (let ((start-tag-name "<script")
+          (end-tag-name   "</script")
+          (start          nil)
+          (end            nil))
+      ;; Find start tag. Search backwards first to give priority to tag pairs
+      ;; the cursor is currently inside.
+      (setq start (search-backward start-tag-name nil t))
+      (when (null start)
+        ;; if start tag not found backwards, then try forwards.
+        (setq start (search-forward start-tag-name nil t)))
+      (catch 'missing-script-start-tag
+        (when (null start)
+          (throw 'missing-script-start-tag "start tag not found")))
+      ;; start is found, move cursor down a line, start highlighting
+      (forward-line)
+      (move-beginning-of-line nil)
+      (set-mark-command nil) ;(evil-visual-line)
+      ;; jump to end tag. always search forward
+      (setq end (search-forward end-tag-name nil t))
+      (catch 'missing-script-end-tag
+        (when (null end)
+          (deactivate-mark)
+          (throw 'mising-script-end-tag "end tag not found")))
+      ;; end tag is found. now move cursor up one line
+      (forward-line -1)
+      (move-end-of-line nil)
+      ;; turn on js2-mode for this region. (and narrow)
+      (call-interactively #'my/js2-mode-on-region)))
+
+  :bind (:map js2-mode-map
+              ("C-c w" . widen))
   :hook ((js-mode . my/js-mode-hook)))
+
+(use-package web-mode
+  :bind (:map web-mode-map
+              ("C-c n" . my/narrow-to-javascript)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
