@@ -1085,6 +1085,12 @@ Comprehensive PDF viewer and annotation tool.
   (setq pdf-annot-activate-created-annotations t))
 #+END_SRC
 
+** Compilation Mode
+#+BEGIN_SRC emacs-lisp
+(use-package compilation
+:hook ((compilation-mode . (lambda () (setq truncate-lines t)))))
+#+END_SRC
+
 * Minor Modes
 ** Smex
 [[https://github.com/nonsequitur/smex][Smex]] brings ido searching to =M-x=.
