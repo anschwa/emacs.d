@@ -1770,6 +1770,19 @@ normal in minibuffer."
   (delete-overlay mouse-secondary-overlay))
 #+END_SRC
 
+** ANSI Color Codes
+#+BEGIN_SRC emacs-lisp
+(require 'ansi-color)
+(defun my/ansi-color (&optional beg end)
+  "Interpret ANSI color esacape sequence by colorifying cotent.
+Operate on selected region on whole buffer."
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (ansi-color-apply-on-region beg end))
+#+END_SRC
+
 * Miscellaneous
 ** macOS
 Unique configurations and path reassignments.
