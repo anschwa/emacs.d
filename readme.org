@@ -341,7 +341,7 @@ Sometimes there are system keybindings that get in the way and will be used late
                 "s-c" "s-v" "s-x" "s-v" "s-q" "s-s" "s-w"
                 "s-a" "s-o" "s-n" "s-p" "s-k" "s-u" "s-m"
                 "s-f" "s-z" "s-g" "s-d" "s-," "s-:" "s-e"
-                "s-t" "C-z" "C-/" "C-\\"))
+                "s-t" "C-z" "C-/" "C-\\" "C-M-i"))
   (global-unset-key (kbd keys)))
 #+END_SRC
 
