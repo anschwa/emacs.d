@@ -1788,34 +1788,32 @@ Operate on selected region on whole buffer."
 Unique configurations and path reassignments.
 
 #+BEGIN_SRC emacs-lisp
-;; Are we on a mac?
-(setq is-mac (equal system-type 'darwin))
+;; Only show menu bar in GUI
+(defun contextual-menubar (&optional frame)
+  "Display the menubar if on a graphical display but not in a tty"
+  (interactive)
+  (set-frame-parameter frame 'menu-bar-lines
+                       (if (display-graphic-p frame)
+                           1 0)))
 
-(when (and is-mac (display-graphic-p))
-  (menu-bar-mode 1))
+;; Are we on a Mac?
+(when (equal system-type 'darwin)
+  (add-hook 'after-make-frame-functions 'contextual-menubar)
 
-;; Make Meta command and add Hyper.
-(when is-mac
-  ;; Change command to meta.
-  (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier 'super)
+  ;; Set modifier keys
+  (setq mac-command-modifier 'super)
+  (setq mac-option-modifier 'meta)
+  (setq mac-control-modifier 'control)
   (setq ns-function-modifier 'hyper)
-  (use-package exec-path-from-shell
-    :ensure t
-    :config
-    (exec-path-from-shell-initialize))
 
   ;; Use right option for spacial characters.
   (setq mac-right-option-modifier 'none)
 
-  ;; Remove date and battery status from modeline
-  ;(display-time-mode -1)
-  ;(display-battery-mode -1)
-
   ;; Set paths to homebrew installed programs.
+  (exec-path-from-shell-initialize)
   (progn
-    (setq geiser-racket-binary "/Applications/Racket v6.2/bin/racket")
-    (setq geiser-guile-binary "/usr/local/bin/guile")
+    ;; (setq geiser-racket-binary "/Applications/Racket v6.2/bin/racket")
+    ;; (setq geiser-guile-binary "/usr/local/bin/guile")
     (setq-default ispell-program-name "/usr/local/bin/aspell")))
 #+END_SRC
 
