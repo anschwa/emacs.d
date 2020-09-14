@@ -1403,6 +1403,12 @@ into dynamic / static templates.
   "if err != nil {\n"
   > _"\n"
   "}\n")
+
+(define-skeleton go-append
+  "go append() boilerplate"
+  nil
+  '(setq v1 (skeleton-read "var? "))
+  > v1 " = append(" v1 ", " _ ")")
 #+END_SRC
 
 ** Abbrev Mode
@@ -1455,6 +1461,7 @@ Expansions can be either global or local to a specific major mode.
 (define-abbrev-table 'go-mode-abbrev-table
   '(
     ("8err" "" go-err-check 0)
+    ("8append" "" go-append 0)
     ))
 
 ;; stop asking whether to save newly added abbrev when quitting emacs
