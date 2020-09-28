@@ -457,16 +457,13 @@ system.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp
-(use-package ob-core)
-(use-package ox-md)
-(use-package ox-latex)
-(use-package ox-beamer)
-
 (use-package org
-  :requires (ob-core ox-md ox-latex ox-beamer)
   :ensure t
+  :requires (ob-core ox-md ox-latex ox-beamer)
+  :mode ("\\.org\\'" . org-mode)
   :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
-  :bind(:map org-mode-map
+  :bind (()
+         :map org-mode-map
              ("<M-right>" . org-demote-subtree)
              ("<M-left>" . org-promote-subtree))
   :config
@@ -665,7 +662,7 @@ For jump-to-definition and auto-completion, you can use
   #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
-    :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'")
+    :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'")
     :config
     (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
     (setq web-mode-markup-indent-offset 2)
@@ -1078,7 +1075,6 @@ Comprehensive PDF viewer and annotation tool.
 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
-  :ensure t
   :pin manual ;; don't reinstall when package updates
   :config
   (setq-default pdf-view-display-size 'fit-page)
@@ -1087,8 +1083,17 @@ Comprehensive PDF viewer and annotation tool.
 
 ** Compilation Mode
 #+BEGIN_SRC emacs-lisp
-(use-package compilation
-:hook ((compilation-mode . (lambda () (setq truncate-lines t)))))
+  (add-hook 'compilation-mode-hook (lambda () (setq truncate-lines t)))
+#+END_SRC
+
+** Elixir
+#+BEGIN_SRC emacs-lisp
+  (use-package elixir-mode
+    :ensure t
+    :config
+    (defun my/elixir-mode-hook ()
+      (add-hook 'before-save-hook 'elixir-format nil t))
+    :hook ((elixir-mode . my/elixir-mode-hook)))
 #+END_SRC
 
 * Minor Modes
@@ -1265,7 +1270,20 @@ like quotes, parens, or markup tags.
   :bind ("C-=" . er/expand-region))
 #+END_SRC
 
-** Docker Tramp
+** Docker
+*** Dockerfile mode
+#+BEGIN_SRC emacs-lisp
+(use-package dockerfile-mode
+:ensure t)
+#+END_SRC
+
+*** Docker-Compose mode
+#+BEGIN_SRC emacs-lisp
+(use-package docker-compose-mode
+:ensure t)
+#+END_SRC
+
+*** Docker Tramp
 Connect to running docker containers
 #+BEGIN_SRC emacs-lisp
 (use-package docker-tramp
