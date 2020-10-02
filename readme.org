@@ -485,6 +485,8 @@ system.
           ("DONE :foreground "forest green :weight bold)
           ("CANCELED" :foreground "forest green" :weight bold)))
 
+  ;; setup org-agenda
+  (setq org-agenda-files (list org-directory))
 
   ;; setup org-capture
   ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
