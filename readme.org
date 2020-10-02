@@ -1094,8 +1094,7 @@ Comprehensive PDF viewer and annotation tool.
     :ensure t
     :config
     (defun my/elixir-mode-hook ()
-      (add-hook 'before-save-hook 'elixir-format nil t))
-    :hook ((elixir-mode . my/elixir-mode-hook)))
+      (add-hook 'before-save-hook 'elixir-format nil t)))
 #+END_SRC
 
 * Minor Modes
