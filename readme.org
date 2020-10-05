@@ -208,37 +208,38 @@ Some quick essentials.
 #+END_SRC
 ** Better Package Defaults
 #+BEGIN_SRC emacs-lisp
-;; Ido, Yes!
-(use-package ido
-  :config
-  (setq ido-enable-flex-matching t)
-  (ido-mode t))
+  ;; Ido, Yes!
+  (use-package ido
+    :config
+    (setq ido-enable-flex-matching t)
+    (setq ido-default-buffer-method 'selected-window)
+    (ido-mode t))
 
-;; Add parts of each file's directory to the buffer name if not unique
-(use-package uniquify
-  :config
-  (setq uniquify-buffer-name-style 'forward))
+  ;; Add parts of each file's directory to the buffer name if not unique
+  (use-package uniquify
+    :config
+    (setq uniquify-buffer-name-style 'forward))
 
-;; Save point position between sessions.
-(use-package saveplace
-  :config
-  (setq-default save-place t)
-  (setq save-place-file (expand-file-name "places" user-emacs-directory)))
+  ;; Save point position between sessions.
+  (use-package saveplace
+    :config
+    (setq-default save-place t)
+    (setq save-place-file (expand-file-name "places" user-emacs-directory)))
 
-;; Recent Files
-(use-package recentf
-  :config
-  (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
-  (setq recentf-max-saved-items 100)
-  (setq recentf-max-menu-items 15)
-  (recentf-mode t))
+  ;; Recent Files
+  (use-package recentf
+    :config
+    (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
+    (setq recentf-max-saved-items 100)
+    (setq recentf-max-menu-items 15)
+    (recentf-mode t))
 
-(defun recentf-ido-find-file ()
-  "Find a recent file using ido."
-  (interactive)
-  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-    (when file
-      (find-file file))))
+  (defun recentf-ido-find-file ()
+    "Find a recent file using ido."
+    (interactive)
+    (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+      (when file
+        (find-file file))))
 #+END_SRC
 
 * Keybindings
