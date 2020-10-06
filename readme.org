@@ -458,89 +458,93 @@ system.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp
-(use-package org
-  :ensure t
-  :requires (ob-core ox-md ox-latex ox-beamer)
-  :mode ("\\.org\\'" . org-mode)
-  :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
-  :bind (()
-         :map org-mode-map
-             ("<M-right>" . org-demote-subtree)
-             ("<M-left>" . org-promote-subtree))
-  :config
-  ;; Essential Settings
-  (setq org-src-fontify-natively t)
-  (setq org-log-done 'time)
-  (setq org-html-doctype "html5")
-  (setq org-export-headline-levels 6)
-  (setq org-export-with-smart-quotes t)
-  (setq org-adapt-indentation nil)
-  (setq org-edit-src-content-indentation 0)
+  (require 'org)
+  (require 'ox)
+  (require 'ob-core)
+  (require 'org-capture)
 
-  ;; Custom TODO keywords
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)" "CANCELED(c@)")))
-  (setq org-todo-keywords-faces
-        '(("TODO" :foreground "red" :weight bold)
-          ("NEXT :foreground "blue :weight bold)
-          ("DONE :foreground "forest green :weight bold)
-          ("CANCELED" :foreground "forest green" :weight bold)))
+  (use-package org
+    :ensure t
+    :mode ("\\.org\\'" . org-mode)
+    :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
+    :bind (()
+           :map org-mode-map
+           ("<M-right>" . org-demote-subtree)
+           ("<M-left>" . org-promote-subtree))
+    :config
+    ;; Essential Settings
+    (setq org-src-fontify-natively t)
+    (setq org-log-done 'time)
+    (setq org-html-doctype "html5")
+    (setq org-export-headline-levels 6)
+    (setq org-export-with-smart-quotes t)
+    (setq org-adapt-indentation nil)
+    (setq org-edit-src-content-indentation 0)
 
-  ;; setup org-agenda
-  (setq org-agenda-files (list org-directory))
+    ;; Custom TODO keywords
+    (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)" "CANCELED(c@)")))
+    (setq org-todo-keyword-faces
+          '(("TODO" :foreground "red" :weight bold)
+            ("NEXT :foreground "blue :weight bold)
+            ("DONE :foreground "forest green :weight bold)
+            ("CANCELED" :foreground "forest green" :weight bold)))
 
-  ;; setup org-capture
-  ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
-  (setq org-capture-templates
-        `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
-           "* TODO %?\n %U\n  %i\n  %a")
-          ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
-           "* %?\n %U\n %i\n")))
+    ;; setup org-capture
+    ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
+    (setq org-capture-templates
+          `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
+             "* TODO %?\n %U\n  %i\n  %a")
+            ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
+             "* %?\n %U\n %i\n")))
 
-  ;; Set up babel source-block execution
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)
-     (haskell . t)
-     (C . t)
-     (shell . t)))
+    ;; setup org-agenda
+    (setq org-agenda-files (list org-directory))
 
-  ;; Set up latex
-  (setq org-export-with-LaTeX-fragments t)
-  (setq org-preview-latex-default-process 'imagemagick)
+    ;; Set up babel source-block execution
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (python . t)
+       (haskell . t)
+       (C . t)
+       (shell . t)))
 
-  ;; local variable for keeping track of pdf-process options
-  (setq pdf-processp nil)
+    ;; Set up latex
+    (setq org-export-with-LaTeX-fragments t)
+    (setq org-preview-latex-default-process 'imagemagick)
 
-  ;; Prevent Weird LaTeX class issue
-  (unless (boundp 'org-latex-classes)
-    (setq org-latex-classes nil))
-  (add-to-list 'org-latex-classes
-               '("per-file-class"
-                 "\\documentclass{article}
-                      [NO-DEFAULT-PACKAGES]
-                      [EXTRA]"))
+    ;; local variable for keeping track of pdf-process options
+    (setq pdf-processp nil)
 
-  (defun toggle-org-latex-pdf-process ()
-    "Change org-latex-pdf-process variable.
+    ;; Prevent Weird LaTeX class issue
+    (unless (boundp 'org-latex-classes)
+      (setq org-latex-classes nil))
+    (add-to-list 'org-latex-classes
+                 '("per-file-class"
+                   "\\documentclass{article}
+                        [NO-DEFAULT-PACKAGES]
+                        [EXTRA]"))
 
-    Toggle from using latexmk or pdflatex. LaTeX-Mk handles BibTeX,
-    but opens a new PDF every-time."
-    (interactive)
-    (if pdf-processp
-        ;; LaTeX-Mk for BibTex
+    (defun toggle-org-latex-pdf-process ()
+      "Change org-latex-pdf-process variable.
+
+      Toggle from using latexmk or pdflatex. LaTeX-Mk handles BibTeX,
+      but opens a new PDF every-time."
+      (interactive)
+      (if pdf-processp
+          ;; LaTeX-Mk for BibTex
+          (progn
+            (setq pdf-processp nil)
+            (setq org-latex-pdf-process
+                  '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f' -gg -pdf -bibtex-cond -f %f"))
+            (message "org-latex-pdf-process: latexmk"))
+        ;; Plain LaTeX export
         (progn
-          (setq pdf-processp nil)
+          (setq pdf-processp t)
           (setq org-latex-pdf-process
-                '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f' -gg -pdf -bibtex-cond -f %f"))
-          (message "org-latex-pdf-process: latexmk"))
-      ;; Plain LaTeX export
-      (progn
-        (setq pdf-processp t)
-        (setq org-latex-pdf-process
-              '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-        (message "org-latex-pdf-process: xelatex")))))
+                '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+          (message "org-latex-pdf-process: xelatex")))))
 #+END_SRC
 
 *** Evaluate Code Blocks on Remote Machines
@@ -832,7 +836,8 @@ Run =eslint --fix=
 
 ** Rust
 #+BEGIN_SRC emacs-lisp
-(use-package rust-mode)
+  (use-package rust-mode
+    :ensure t)
 #+END_SRC
 
 ** Go
@@ -1058,9 +1063,10 @@ Emacs IRC Client
 from the UNIX command-line.
 
 #+BEGIN_SRC emacs-lisp
-(use-package ledger-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
+  (use-package ledger-mode
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
 #+END_SRC
 
 ** Write Room
@@ -1077,11 +1083,11 @@ Comprehensive PDF viewer and annotation tool.
 - =+=, =-=, =0= for zoom and reset view
 
 #+BEGIN_SRC emacs-lisp
-(use-package pdf-tools
-  :pin manual ;; don't reinstall when package updates
-  :config
-  (setq-default pdf-view-display-size 'fit-page)
-  (setq pdf-annot-activate-created-annotations t))
+  ;; (use-package pdf-tools
+  ;;   :pin manual ;; don't reinstall when package updates
+  ;;   :config
+  ;;   (setq-default pdf-view-display-size 'fit-page)
+  ;;   (setq pdf-annot-activate-created-annotations t))
 #+END_SRC
 
 ** Compilation Mode
