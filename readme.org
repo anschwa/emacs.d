@@ -309,6 +309,9 @@ I don't like to quit Emacs on accident, and I find closing frames more useful.
 ;; Window Navigation
 (bind-key "M-o" 'other-window)
 
+;; Cycle Whitespace
+(bind-key "M-SPC" 'cycle-spacing)
+
 ;; Window resizing
 (bind-key "M-s-<left>" 'shrink-window-horizontally)
 (bind-key "M-s-<right>" 'enlarge-window-horizontally)
