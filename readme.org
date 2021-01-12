@@ -681,7 +681,13 @@ For jump-to-definition and auto-completion, you can use
     (setq web-mode-css-indent-offset 2)
     (setq web-mode-code-indent-offset 2)
     (setq web-mode-style-padding 0)
-    (setq web-mode-script-padding 0))
+    (setq web-mode-script-padding 0)
+
+    (defun my/web-mode-hook()
+      ;; Do not over-indent method chains
+      (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
+    :hook ((web-mode . my/web-mode-hook)))
   #+END_SRC
 
 ** Emmet
