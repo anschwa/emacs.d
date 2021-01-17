@@ -529,9 +529,10 @@ system.
                '("per-file-class"
                  "\\documentclass{article}
                       [NO-DEFAULT-PACKAGES]
-                      [EXTRA]"))
+                      [EXTRA]")))
 
-  (defun toggle-org-latex-pdf-process ()
+;; Other config
+(defun toggle-org-latex-pdf-process ()
     "Change org-latex-pdf-process variable.
 
     Toggle from using latexmk or pdflatex. LaTeX-Mk handles BibTeX,
@@ -549,7 +550,7 @@ system.
         (setq pdf-processp t)
         (setq org-latex-pdf-process
               '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-        (message "org-latex-pdf-process: xelatex")))))
+        (message "org-latex-pdf-process: xelatex"))))
 #+END_SRC
 
 *** Evaluate Code Blocks on Remote Machines
@@ -798,7 +799,7 @@ For jump-to-definition and auto-completion, you can use
 
   :bind (:map js2-mode-map
               ("C-c w" . my/widen-from-javascript))
-  :hook ((js-mode . my/js-mode-hook)))
+  :hook ((js2-mode . my/js-mode-hook)))
 
 (use-package web-mode
   :bind (:map web-mode-map
@@ -927,7 +928,7 @@ Run =go fmt= on save and run tests using =M-x compile=.
 ** Scheme / Geiser
 #+BEGIN_SRC emacs-lisp
 (use-package geiser
-  :ensure t
+  :disabled
   :commands (geiser-eval-last-sexp)
   :bind (:map geiser-mode-map
               ("C-c C-c" . geiser-eval-last-sexp))
@@ -1355,7 +1356,7 @@ into dynamic / static templates.
   "#+TITLE: " str | (buffer-name) "\n"
   "#+AUTHOR: " (user-full-name) "\n"
   "#+DATE: " (insert-date "v") "\n"
-  "#+OPTIONS: ':true *:true toc:nil num:nil" _)
+  "#+OPTIONS: ':true *:true toc:nil num:nil ^:nil\n" _)
 
 (define-skeleton org-skeleton-latex-header
   "Insert document headers and essential LaTeX header options."
@@ -1446,6 +1447,13 @@ into dynamic / static templates.
   nil
   '(setq v1 (skeleton-read "var? "))
   > v1 " = append(" v1 ", " _ ")")
+
+(define-skeleton go-test-case
+  "go t.Run boilerplate"
+  "Name: "
+  "t.Run(\""_"\", func(t *testing.T) {\n"
+  > "\n"
+  "})\n")
 #+END_SRC
 
 ** Abbrev Mode
@@ -1499,6 +1507,7 @@ Expansions can be either global or local to a specific major mode.
   '(
     ("8err" "" go-err-check 0)
     ("8append" "" go-append 0)
+    ("8test" "" go-test-case 0)
     ))
 
 ;; stop asking whether to save newly added abbrev when quitting emacs
