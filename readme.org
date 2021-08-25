@@ -597,7 +597,7 @@ aptitude install python-virtualenv pipenv
 pip3 install jedi flake8 black
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package python
   :config
   (setq python-shell-interpreter "python3")
@@ -881,8 +881,8 @@ Run =go fmt= on save and run tests using =M-x compile=.
   :init
   (setq lsp-ui-doc-enable nil))
 
-(use-package company-lsp
-  :ensure t)
+;; (use-package company-lsp
+;;   :ensure t)
 
 (use-package lsp-mode
   :ensure t
@@ -979,6 +979,14 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
   :config
   (setq ediff-split-window-function 'split-window-horizontally)
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
+#+END_SRC
+
+** Bash
+#+BEGIN_SRC emacs-lisp
+(use-package flymake-shellcheck
+  :ensure t
+  :init
+  (add-hook 'sh-mode-hook 'flymake-shellcheck-load))
 #+END_SRC
 
 ** Fish Shell
