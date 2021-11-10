@@ -675,7 +675,7 @@ For jump-to-definition and auto-completion, you can use
   #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
-    :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'")
+    :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'" "\\.tmpl\\'")
     :config
     (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
     (setq web-mode-markup-indent-offset 2)
