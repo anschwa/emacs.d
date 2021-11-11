@@ -2,374 +2,374 @@
 #+OPTIONS: ':true *:true num:nil
 
 * Description
-  This configuration is designed for Emacs 27 and above. This file
-  includes everything required to setup my environment.
+This configuration is designed for Emacs 27 and above. This file
+includes everything required to setup my environment.
 
-  If starting Emacs for the first time using this configuration, you
-  will need to do the following:
-  1. Visit this file and execute =M-x org-babel-tangle=.
-  2. Restart Emacs.
+If starting Emacs for the first time using this configuration, you
+will need to do the following:
+   1. Visit this file and execute =M-x org-babel-tangle=.
+   2. Restart Emacs.
 
- [[file:screenshot.png]]
+      [[file:screenshot.png]]
 
 * Starting Emacs
-  Exchange startup time for elegance:
-  #+BEGIN_SRC emacs-lisp :tangle init.el
-    ;;; init.el
-    (require 'ob-tangle)
-    (org-babel-load-file (expand-file-name "readme.org" user-emacs-directory))
-  #+END_SRC
+Exchange startup time for elegance:
+#+BEGIN_SRC emacs-lisp :tangle init.el
+;;; init.el
+(require 'ob-tangle)
+(org-babel-load-file (expand-file-name "readme.org" user-emacs-directory))
+#+END_SRC
 
 * Essentials
-  #+BEGIN_SRC emacs-lisp
-    ;; Turn off mouse interface early in startup to avoid momentary display.
-    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-    (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-    (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+#+BEGIN_SRC emacs-lisp
+;; Turn off mouse interface early in startup to avoid momentary display.
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-    ;; No splash screen please.
-    (setq inhibit-startup-message t)
+;; No splash screen please.
+(setq inhibit-startup-message t)
 
-    ;; No fascists.
-    (setq initial-scratch-message nil)
+;; No fascists.
+(setq initial-scratch-message nil)
 
-    ;; Productive default mode.
-    (setq initial-major-mode 'org-mode)
+;; Productive default mode.
+(setq initial-major-mode 'org-mode)
 
-    ;; No alarms.
-    (setq ring-bell-function 'ignore)
+;; No alarms.
+(setq ring-bell-function 'ignore)
 
-    ;; Change Cursor
-    (setq-default cursor-type 'box)
-    (blink-cursor-mode -1)
+;; Change Cursor
+(setq-default cursor-type 'box)
+(blink-cursor-mode -1)
 
-    ;; When on a tab, make the cursor the tab length…
-    (setq-default x-stretch-cursor t)
+;; When on a tab, make the cursor the tab length…
+(setq-default x-stretch-cursor t)
 
-    ;; But never insert tabs…
-    (set-default 'indent-tabs-mode nil)
+;; But never insert tabs…
+(set-default 'indent-tabs-mode nil)
 
-    ;; Except in Makefiles.
-    (add-hook 'makefile-mode-hook 'indent-tabs-mode)
+;; Except in Makefiles.
+(add-hook 'makefile-mode-hook 'indent-tabs-mode)
 
-    ;; Keep files clean.
-    (add-hook 'before-save-hook 'whitespace-cleanup)
-  #+END_SRC
+;; Keep files clean.
+(add-hook 'before-save-hook 'whitespace-cleanup)
+#+END_SRC
 
 * Housekeeping
-  #+BEGIN_SRC emacs-lisp
-    ;; Write backup files to their own directory
-    (setq backup-directory-alist
-          `(("." . ,(expand-file-name
-                     (concat user-emacs-directory "backups")))))
+#+BEGIN_SRC emacs-lisp
+;; Write backup files to their own directory
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
 
-    ;; Don't write lock-files, I'm the only one here
-    (setq create-lockfiles nil)
+;; Don't write lock-files, I'm the only one here
+(setq create-lockfiles nil)
 
-    ;; Keep emacs Custom-settings in separate file.
-    (let ((file (expand-file-name "custom.el" user-emacs-directory)))
-      (when (not (file-exists-p file))
-        (with-temp-buffer (write-file file))))
+;; Keep emacs Custom-settings in separate file.
+(let ((file (expand-file-name "custom.el" user-emacs-directory)))
+  (when (not (file-exists-p file))
+    (with-temp-buffer (write-file file))))
 
-    (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-    (load custom-file)
-  #+END_SRC
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+#+END_SRC
 
 * Better Defaults
-  #+BEGIN_SRC emacs-lisp
-    ;; Fix empty clipboard error.
-    (setq save-interprogram-paste-before-kill nil)
+#+BEGIN_SRC emacs-lisp
+;; Fix empty clipboard error.
+(setq save-interprogram-paste-before-kill nil)
 
-    ;; Remove text in active region if inserting text
-    (delete-selection-mode 1)
+;; Remove text in active region if inserting text
+(delete-selection-mode 1)
 
-    ;; Don't automatically copy selected text
-    (setq select-enable-primary nil)
+;; Don't automatically copy selected text
+(setq select-enable-primary nil)
 
-    ;; Full path in frame title
-    (setq frame-title-format '(buffer-file-name "%f" ("%b")))
+;; Full path in frame title
+(setq frame-title-format '(buffer-file-name "%f" ("%b")))
 
-    ;; Auto refresh buffers when edits occur outside emacs
-    (global-auto-revert-mode 1)
+;; Auto refresh buffers when edits occur outside emacs
+(global-auto-revert-mode 1)
 
-    ;; Also auto refresh Dired, but be quiet about it
-    (setq global-auto-revert-non-file-buffers t)
-    (setq auto-revert-verbose nil)
+;; Also auto refresh Dired, but be quiet about it
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
 
-    ;; Quickly copy/move file in Dired
-    (setq dired-dwim-target t)
+;; Quickly copy/move file in Dired
+(setq dired-dwim-target t)
 
-    ;; Show keystrokes in progress
-    (setq echo-keystrokes 0.1)
+;; Show keystrokes in progress
+(setq echo-keystrokes 0.1)
 
-    ;; Move files to trash when deleting
-    (setq delete-by-moving-to-trash t)
+;; Move files to trash when deleting
+(setq delete-by-moving-to-trash t)
 
-    ;; Transparently open compressed files
-    (auto-compression-mode t)
+;; Transparently open compressed files
+(auto-compression-mode t)
 
-    ;; Show matching parens
-    (setq show-paren-delay 0)
-    (show-paren-mode 1)
+;; Show matching parens
+(setq show-paren-delay 0)
+(show-paren-mode 1)
 
-    ;; Auto-close brackets and double quotes
-    (electric-pair-mode 1)
+;; Auto-close brackets and double quotes
+(electric-pair-mode 1)
 
-    ;; Answering just 'y' or 'n' will do
-    (defalias 'yes-or-no-p 'y-or-n-p)
+;; Answering just 'y' or 'n' will do
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-    ;; UTF-8 please
-    (setq locale-coding-system 'utf-8)
-    (set-terminal-coding-system 'utf-8)
-    (set-keyboard-coding-system 'utf-8)
-    (set-selection-coding-system 'utf-8)
-    (prefer-coding-system 'utf-8)
+;; UTF-8 please
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 
-    ;; Always display line and column numbers
-    (setq line-number-mode t)
-    (setq column-number-mode t)
+;; Always display line and column numbers
+(setq line-number-mode t)
+(setq column-number-mode t)
 
-    ;; Wrap lines at 80 characters wide, not 72
-    (setq fill-column 80)
+;; Wrap lines at 80 characters wide, not 72
+(setq fill-column 80)
 
-    ;; Smooth Scroll
-    (setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ; one line at a time
+;; Smooth Scroll
+(setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ; one line at a time
 
-    ;; Scroll one line when hitting bottom of window
-    (setq scroll-conservatively 10000)
+;; Scroll one line when hitting bottom of window
+(setq scroll-conservatively 10000)
 
-    ;; Navigate sillycased words
-    (global-subword-mode 1)
+;; Navigate sillycased words
+(global-subword-mode 1)
 
-    ;; Word wrap (t is no wrap, nil is wrap)
-    (setq-default truncate-lines nil)
+;; Word wrap (t is no wrap, nil is wrap)
+(setq-default truncate-lines nil)
 
-    ;; Sentences do not need double spaces to end. Period.
-    (set-default 'sentence-end-double-space nil)
+;; Sentences do not need double spaces to end. Period.
+(set-default 'sentence-end-double-space nil)
 
-    ;; Don't use shift to mark things
-    (setq shift-select-mode nil)
+;; Don't use shift to mark things
+(setq shift-select-mode nil)
 
-    ;; eval-expression-print-level needs to be set to nil (turned off) so
-    ;; that you can always see what's happening.
-    (setq eval-expression-print-level nil)
+;; eval-expression-print-level needs to be set to nil (turned off) so
+;; that you can always see what's happening.
+(setq eval-expression-print-level nil)
 
-    ;; Allow clipboard from outside emacs
-    (setq select-enable-clipboard t
-          save-interprogram-paste-before-kill t
-          apropos-do-all t
-          mouse-yank-at-point t)
+;; Allow clipboard from outside emacs
+(setq select-enable-clipboard t
+      save-interprogram-paste-before-kill t
+      apropos-do-all t
+      mouse-yank-at-point t)
 
-    ;; Improve performance of very long lines
-    (setq-default bidi-display-reordering 'left-to-right)
-  #+END_SRC
+;; Improve performance of very long lines
+(setq-default bidi-display-reordering 'left-to-right)
+#+END_SRC
 
 * Package Management
-  #+BEGIN_SRC emacs-lisp
-    (require 'package)
-    (package-initialize)
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(package-initialize)
 
-    (add-to-list 'package-archives
-                 '("melpa" . "https://melpa.org/packages/") t)
-    (add-to-list 'package-archives
-                 '("org" . "https://orgmode.org/elpa/") t)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("org" . "https://orgmode.org/elpa/") t)
 
-    ;; Ensure use-package is installed
-    (when (not (package-installed-p 'use-package))
-      (package-refresh-contents)
-      (package-install 'use-package))
+;; Ensure use-package is installed
+(when (not (package-installed-p 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-    (eval-when-compile
-      (require 'use-package))
-  #+END_SRC
+(eval-when-compile
+  (require 'use-package))
+#+END_SRC
 
 * Better Package Defaults
-  #+BEGIN_SRC emacs-lisp
-  ;; Add parts of each file's directory to the buffer name if not unique
-  (use-package uniquify
-    :config
-    (setq uniquify-buffer-name-style 'forward))
+#+BEGIN_SRC emacs-lisp
+;; Add parts of each file's directory to the buffer name if not unique
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'forward))
 
-  ;; Save point position between sessions.
-  (use-package saveplace
-    :config
-    (setq-default save-place t)
-    (setq save-place-file (expand-file-name "places" user-emacs-directory)))
+;; Save point position between sessions.
+(use-package saveplace
+  :config
+  (setq-default save-place t)
+  (setq save-place-file (expand-file-name "places" user-emacs-directory)))
 
-  ;; Ido
-  (use-package ido
-    :config
-    (setq ido-enable-flex-matching t)
-    (setq ido-default-buffer-method 'selected-window)
-    (ido-mode t))
+;; Ido
+(use-package ido
+  :config
+  (setq ido-enable-flex-matching t)
+  (setq ido-default-buffer-method 'selected-window)
+  (ido-mode t))
 
-  ;; Smex (ido for M-x)
-  (use-package smex
-    :ensure t
-    :commands (smex smex-major-mode-commands)
-    :bind (("M-SPC" . smex)))
+;; Smex (ido for M-x)
+(use-package smex
+  :ensure t
+  :commands (smex smex-major-mode-commands)
+  :bind (("M-SPC" . smex)))
 
-  ;; Recent Files
-  (use-package recentf
-    :config
-    (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
-    (setq recentf-max-saved-items 100)
-    (setq recentf-max-menu-items 15)
-    (recentf-mode t)
+;; Recent Files
+(use-package recentf
+  :config
+  (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
+  (setq recentf-max-saved-items 100)
+  (setq recentf-max-menu-items 15)
+  (recentf-mode t)
 
-    (defun my/recentf-ido-find-file ()
+  (defun my/recentf-ido-find-file ()
     "Find a recent file using ido."
     (interactive)
     (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
       (when file
         (find-file file))))
 
-    :bind ("C-x f" . my/recentf-ido-find-file))
-  #+END_SRC
+  :bind ("C-x f" . my/recentf-ido-find-file))
+#+END_SRC
 
 * Global Keybindings
-  #+BEGIN_SRC emacs-lisp
-  ;; Exiting
-  ;; The mnemonic is C-x REALLY QUIT
-  (global-set-key (kbd "C-x r q") 'save-buffers-kill-terminal)
-  (global-set-key (kbd "C-x C-c") 'delete-frame)
+#+BEGIN_SRC emacs-lisp
+;; Exiting
+;; The mnemonic is C-x REALLY QUIT
+(global-set-key (kbd "C-x r q") 'save-buffers-kill-terminal)
+(global-set-key (kbd "C-x C-c") 'delete-frame)
 
-  ;; Symbol completion
-  (global-set-key (kbd "M-/") 'hippie-expand)
+;; Symbol completion
+(global-set-key (kbd "M-/") 'hippie-expand)
 
-  (setq tab-always-indent 'complete)
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-from-kill
-          try-expand-dabbrev-all-buffers
-          try-complete-file-name
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol))
+(setq tab-always-indent 'complete)
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-from-kill
+        try-expand-dabbrev-all-buffers
+        try-complete-file-name
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
 
-  ;; Window Navigation
-  (global-set-key (kbd "M-o") 'other-window)
+;; Window Navigation
+(global-set-key (kbd "M-o") 'other-window)
 
-  ;; Cycle Whitespace
-  (global-set-key (kbd "C-c C-SPC") 'cycle-spacing)
+;; Cycle Whitespace
+(global-set-key (kbd "C-c C-SPC") 'cycle-spacing)
 
-  ;; Window splitting
-  (global-set-key (kbd "M-0") 'delete-window)
-  (global-set-key (kbd "M-1") 'delete-other-windows)
-  (global-set-key (kbd "M-2") 'split-window-vertically)
-  (global-set-key (kbd "M-3") 'split-window-horizontally)
-  (global-set-key (kbd "M-=") 'balance-windows)
+;; Window splitting
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-vertically)
+(global-set-key (kbd "M-3") 'split-window-horizontally)
+(global-set-key (kbd "M-=") 'balance-windows)
 
-  ;; More parity with readline
-  (defun my/backward-kill-word (&optional arg)
-    "kill active region or one word backward"
-    (interactive "p")
-    (if (region-active-p)
-        (kill-region (region-beginning) (region-end))
-      (backward-kill-word arg)))
+;; More parity with readline
+(defun my/backward-kill-word (&optional arg)
+  "kill active region or one word backward"
+  (interactive "p")
+  (if (region-active-p)
+      (kill-region (region-beginning) (region-end))
+    (backward-kill-word arg)))
 
-  (global-set-key (kbd "C-h") 'backward-delete-char) ; help is still available with M-x describe-*
-  (global-set-key (kbd "C-w") 'my/backward-kill-word)
+(global-set-key (kbd "C-h") 'backward-delete-char) ; help is still available with M-x describe-*
+(global-set-key (kbd "C-w") 'my/backward-kill-word)
 
-  ;; Unset keys
-  (dolist (keys '("<M-up>" "<M-down>" "<s-left>" "<s-right>"
-                  "s-c" "s-v" "s-x" "s-v" "s-q" "s-s" "s-w"
-                  "s-a" "s-o" "s-n" "s-p" "s-k" "s-u" "s-m"
-                  "s-f" "s-z" "s-g" "s-d" "s-," "s-:" "s-e"
-                  "s-t" "C-z" "C-\\" "C-M-i"))
-    (global-unset-key (kbd keys)))
-  #+END_SRC
+;; Unset keys
+(dolist (keys '("<M-up>" "<M-down>" "<s-left>" "<s-right>"
+                "s-c" "s-v" "s-x" "s-v" "s-q" "s-s" "s-w"
+                "s-a" "s-o" "s-n" "s-p" "s-k" "s-u" "s-m"
+                "s-f" "s-z" "s-g" "s-d" "s-," "s-:" "s-e"
+                "s-t" "C-z" "C-\\" "C-M-i"))
+  (global-unset-key (kbd keys)))
+#+END_SRC
 
 * Appearance
 ** Mode Line
-   #+BEGIN_SRC emacs-lisp
-     (setq display-time-day-and-date t
-           display-time-format "%a %b %d %R"
-           display-time-interval 60
-           display-time-default-load-average nil)
-     (display-time)
+#+BEGIN_SRC emacs-lisp
+(setq display-time-day-and-date t
+      display-time-format "%a %b %d %R"
+      display-time-interval 60
+      display-time-default-load-average nil)
+(display-time)
 
-     ;; Line Numbers
-     (global-display-line-numbers-mode t)
+;; Line Numbers
+(global-display-line-numbers-mode t)
 
-     ;; Default Font
-     ;; The easiest way to set the default font is to use the menu.
-     ;; (1) Options -> Set Default Font
-     ;; (2) Options -> Save Options
-     (defun my/default-emacs-font ()
-       (interactive)
-       (cond
-        ((string-equal system-type "gnu/linux")
-         (define-key special-event-map [config-changed-event] 'ignore) ; prevent GConf from interfering
-         (set-frame-font "DejaVu Sans Mono 10" nil t))
-        ((string-equal system-type "darwin")
-         (set-frame-font "Menlo 12" nil t)))
-       )
-   #+END_SRC
+;; Default Font
+;; The easiest way to set the default font is to use the menu.
+;; (1) Options -> Set Default Font
+;; (2) Options -> Save Options
+(defun my/default-emacs-font ()
+  (interactive)
+  (cond
+   ((string-equal system-type "gnu/linux")
+    (define-key special-event-map [config-changed-event] 'ignore) ; prevent GConf from interfering
+    (set-frame-font "DejaVu Sans Mono 10" nil t))
+   ((string-equal system-type "darwin")
+    (set-frame-font "Menlo 12" nil t)))
+  )
+#+END_SRC
 
 ** Theme
-   #+BEGIN_SRC emacs-lisp
-     (let ((dir (expand-file-name "themes" user-emacs-directory)))
-       (when (not (file-directory-p dir))
-         (make-directory dir)))
+#+BEGIN_SRC emacs-lisp
+(let ((dir (expand-file-name "themes" user-emacs-directory)))
+  (when (not (file-directory-p dir))
+    (make-directory dir)))
 
-     (setq custom-theme-directory (concat user-emacs-directory "themes/"))
-     (load-theme 'stoneware t)
-   #+END_SRC
+(setq custom-theme-directory (concat user-emacs-directory "themes/"))
+(load-theme 'stoneware t)
+#+END_SRC
 
-   Stoneware is a bare-bones Emacs theme I came up with designed to
-   respect the default colors as much as possible. It borrows from
-   the ideas expressed in other color schemes such as [[https://ethanschoonover.com/solarized/][Solarized]] and
-   [[https://github.com/robertmeta/nofrils][nofrils]], as well as the [[http://acme.cat-v.org/][ACME]] editor from Plan 9.
+Stoneware is a bare-bones Emacs theme I came up with designed to
+respect the default colors as much as possible. It borrows from
+the ideas expressed in other color schemes such as [[https://ethanschoonover.com/solarized/][Solarized]] and
+[[https://github.com/robertmeta/nofrils][nofrils]], as well as the [[http://acme.cat-v.org/][ACME]] editor from Plan 9.
 
-   However, some packages set their own styles instead of inheriting
-   from the standard =font-lock-faces=, in which case I will usually
-   make adjustments with =M-x customize-face= rather than including
-   edge-cases in the theme itself.
+However, some packages set their own styles instead of inheriting
+from the standard =font-lock-faces=, in which case I will usually
+make adjustments with =M-x customize-face= rather than including
+edge-cases in the theme itself.
 
-   This theme gets written to disk when Emacs starts up.
-   #+BEGIN_SRC emacs-lisp :tangle ./themes/stoneware-theme.el
-   (deftheme stoneware)
+This theme gets written to disk when Emacs starts up.
 
-       ;;; color pallet in the style of base16
-   (let ((base00 "#fdf6e3")  ; default background
-         (base01 "#fbeecb")  ; lighter background
-         (base02 "#d6d6d6")  ; selection background
-         (base03 "#f8df9c")  ; line highlighting
-         (base04 "#5c5c5c")  ; dark foreground
-         (base05 "#000000")  ; default foreground
-         (base06 "#a3a3a3")  ; light foreground
-         (base07 "#a52a2a")) ; accented foreground
+#+BEGIN_SRC emacs-lisp :tangle ./themes/stoneware-theme.el
+(deftheme stoneware)
 
-     (custom-theme-set-faces
-      'stoneware
-      `(default             ((t (:foreground ,base05 :background ,base00))))
-      `(cursor              ((t (:foreground ,base00 :background ,base05))))
-      `(region              ((t (:background ,base02))))
-      `(highlight           ((t (:background ,base03))))
-      `(shadow              ((t :foreground ,base04)))
-      `(fringe              ((t (:background ,base00))))
-      `(secondary-selection ((t :background ,base03)))
-      `(minibuffer-prompt   ((t (:foreground ,base05))))
-      `(mode-line           ((t (:foreground ,base05 :background ,base02 :box nil))))
-      `(mode-line-buffer-id ((t :weight bold)))
-      `(mode-line-inactive  ((t (:foreground ,base06 :background ,base01 :box nil))))
-      `(line-number         ((t (:foreground ,base06))))
+(let ((color00 "#fdf6e3")  ; default background
+      (color01 "#fbeecb")  ; lighter background
+      (color02 "#d6d6d6")  ; selection background
+      (color03 "#f8df9c")  ; line highlighting
+      (color04 "#5c5c5c")  ; dark foreground
+      (color05 "#000000")  ; default foreground
+      (color06 "#a3a3a3")  ; light foreground
+      (color07 "#a52a2a")) ; accented foreground
 
-       ;;; enable minimal syntax highlighting
-      '(font-lock-builtin-face ((t (:weight bold))))
-      `(font-lock-comment-face ((t (:foreground ,base04))))
-      `(font-lock-string-face  ((t (:foreground ,base07))))
+  (custom-theme-set-faces
+   'stoneware
+   `(default             ((t (:foreground ,color05 :background ,color00))))
+   `(cursor              ((t (:foreground ,color00 :background ,color05))))
+   `(region              ((t (:background ,color02))))
+   `(highlight           ((t (:background ,color03))))
+   `(shadow              ((t :foreground ,color04)))
+   `(fringe              ((t (:background ,color00))))
+   `(secondary-selection ((t :background ,color03)))
+   `(minibuffer-prompt   ((t (:foreground ,color05))))
+   `(mode-line           ((t (:foreground ,color05 :background ,color02 :box nil))))
+   `(mode-line-buffer-id ((t :weight bold)))
+   `(mode-line-inactive  ((t (:foreground ,color06 :background ,color01 :box nil))))
+   `(line-number         ((t (:foreground ,color06))))
 
-       ;;; disable unwanted styles
-      '(font-lock-constant-face      ((t nil)))
-      '(font-lock-function-name-face ((t nil)))
-      '(font-lock-keyword-face       ((t nil)))
-      '(font-lock-negation-char-face ((t nil)))
-      '(font-lock-type-face          ((t nil)))
-      '(font-lock-variable-name-face ((t nil)))))
+    ;;; enable minimal syntax highlighting
+   '(font-lock-builtin-face ((t (:weight bold))))
+   `(font-lock-comment-face ((t (:foreground ,color04))))
+   `(font-lock-string-face  ((t (:foreground ,color07))))
 
-   (provide-theme 'stoneware)
-   #+END_SRC
+    ;;; disable unwanted styles
+   '(font-lock-constant-face      ((t nil)))
+   '(font-lock-function-name-face ((t nil)))
+   '(font-lock-keyword-face       ((t nil)))
+   '(font-lock-negation-char-face ((t nil)))
+   '(font-lock-type-face          ((t nil)))
+   '(font-lock-variable-name-face ((t nil)))))
+
+(provide-theme 'stoneware)
+#+END_SRC
 
 * Major Modes
 ** Org
@@ -380,97 +380,97 @@ system.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp
-  (require 'org)
-  (require 'ox)
-  (require 'ob-core)
-  (require 'org-agenda)
-  (require 'org-capture)
+(require 'org)
+(require 'ox)
+(require 'ob-core)
+(require 'org-agenda)
+(require 'org-capture)
 
-  (use-package org
-    :ensure t
-    :mode ("\\.org\\'" . org-mode)
-    :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
-    :bind (()
-           :map org-mode-map
-           ("<M-right>" . org-demote-subtree)
-           ("<M-left>" . org-promote-subtree))
-    :config
-    ;; Essential Settings
-    (setq org-src-fontify-natively t)
-    (setq org-log-done 'time)
-    (setq org-html-doctype "html5")
-    (setq org-export-headline-levels 6)
-    (setq org-export-with-smart-quotes t)
-    (setq org-adapt-indentation nil)
-    (setq org-edit-src-content-indentation 0)
+(use-package org
+  :ensure t
+  :mode ("\\.org\\'" . org-mode)
+  :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
+  :bind (()
+         :map org-mode-map
+         ("<M-right>" . org-demote-subtree)
+         ("<M-left>" . org-promote-subtree))
+  :config
+  ;; Essential Settings
+  (setq org-src-fontify-natively t)
+  (setq org-log-done 'time)
+  (setq org-html-doctype "html5")
+  (setq org-export-headline-levels 6)
+  (setq org-export-with-smart-quotes t)
+  (setq org-adapt-indentation nil)
+  (setq org-edit-src-content-indentation 0)
 
-    ;; Custom TODO keywords
-    (setq org-todo-keywords
-          '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)" "CANCELED(c@)")))
-    (setq org-todo-keyword-faces
-          '(("TODO" :foreground "red" :weight bold)
-            ("NEXT :foreground "blue :weight bold)
-            ("DONE :foreground "forest green :weight bold)
-            ("CANCELED" :foreground "forest green" :weight bold)))
+  ;; Custom TODO keywords
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)" "CANCELED(c@)")))
+  (setq org-todo-keyword-faces
+        '(("TODO" :foreground "red" :weight bold)
+          ("NEXT :foreground "blue :weight bold)
+          ("DONE :foreground "forest green :weight bold)
+          ("CANCELED" :foreground "forest green" :weight bold)))
 
-    ;; setup org-capture
-    ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
-    (setq org-capture-templates
-          `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
-             "* TODO %?\n %U\n  %i\n  %a")
-            ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
-             "* %?\n %U\n %i\n")))
+  ;; setup org-capture
+  ;; `M-x org-capture' to add notes. `C-u M-x org-capture' to visit file
+  (setq org-capture-templates
+        `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
+           "* TODO %?\n %U\n  %i\n  %a")
+          ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
+           "* %?\n %U\n %i\n")))
 
-    ;; setup org-agenda
-    (setq org-agenda-files (list org-directory))
-    (setq org-agenda-window-setup 'current-window)
+  ;; setup org-agenda
+  (setq org-agenda-files (list org-directory))
+  (setq org-agenda-window-setup 'current-window)
 
-    ;; Set up babel source-block execution
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (python . t)
-       (haskell . t)
-       (C . t)
-       (shell . t)))
+  ;; Set up babel source-block execution
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (haskell . t)
+     (C . t)
+     (shell . t)))
 
-    ;; Set up latex
-    (setq org-export-with-LaTeX-fragments t)
-    (setq org-preview-latex-default-process 'imagemagick)
+  ;; Set up latex
+  (setq org-export-with-LaTeX-fragments t)
+  (setq org-preview-latex-default-process 'imagemagick)
 
-    ;; local variable for keeping track of pdf-process options
-    (setq pdf-processp nil)
+  ;; local variable for keeping track of pdf-process options
+  (setq pdf-processp nil)
 
-    ;; Prevent Weird LaTeX class issue
-    (unless (boundp 'org-latex-classes)
-      (setq org-latex-classes nil))
-    (add-to-list 'org-latex-classes
-                 '("per-file-class"
-                   "\\documentclass{article}
-                        [NO-DEFAULT-PACKAGES]
-                        [EXTRA]")))
+  ;; Prevent Weird LaTeX class issue
+  (unless (boundp 'org-latex-classes)
+    (setq org-latex-classes nil))
+  (add-to-list 'org-latex-classes
+               '("per-file-class"
+                 "\\documentclass{article}
+                      [NO-DEFAULT-PACKAGES]
+                      [EXTRA]")))
 
-  ;; Other config
-  (defun toggle-org-latex-pdf-process ()
-      "Change org-latex-pdf-process variable.
+;; Other config
+(defun toggle-org-latex-pdf-process ()
+  "Change org-latex-pdf-process variable.
 
-      Toggle from using latexmk or pdflatex. LaTeX-Mk handles BibTeX,
-      but opens a new PDF every-time."
-      (interactive)
-      (if pdf-processp
-          ;; LaTeX-Mk for BibTex
-          (progn
-            (setq pdf-processp nil)
-            (setq org-latex-pdf-process
-                  '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f' -gg -pdf -bibtex-cond -f %f"))
-            (message "org-latex-pdf-process: latexmk"))
+    Toggle from using latexmk or pdflatex. LaTeX-Mk handles BibTeX,
+    but opens a new PDF every-time."
+  (interactive)
+  (if pdf-processp
+      ;; LaTeX-Mk for BibTex
+      (progn
+        (setq pdf-processp nil)
+        (setq org-latex-pdf-process
+              '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f' -gg -pdf -bibtex-cond -f %f"))
+        (message "org-latex-pdf-process: latexmk"))
 
-        ;; Plain LaTeX export
-        (progn
-          (setq pdf-processp t)
-          (setq org-latex-pdf-process
-                '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-          (message "org-latex-pdf-process: xelatex"))))
+    ;; Plain LaTeX export
+    (progn
+      (setq pdf-processp t)
+      (setq org-latex-pdf-process
+            '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+      (message "org-latex-pdf-process: xelatex"))))
 #+END_SRC
 
 ** C-Family
@@ -485,11 +485,11 @@ system.
 
 ** Ruby
 #+BEGIN_SRC emacs-lisp
-  (use-package ruby-mode
-    :ensure t
-    :config
-    (setq ruby-align-to-stmt-keywords nil)
-    (setq ruby-insert-encoding-magic-comment nil))
+(use-package ruby-mode
+  :ensure t
+  :config
+  (setq ruby-align-to-stmt-keywords nil)
+  (setq ruby-insert-encoding-magic-comment nil))
 #+END_SRC
 
 ** Web Mode
@@ -544,7 +544,7 @@ system.
 
 ** Compilation Mode
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'compilation-mode-hook (lambda () (setq truncate-lines t)))
+(add-hook 'compilation-mode-hook (lambda () (setq truncate-lines t)))
 #+END_SRC
 
 ** Language Server (eglot)
@@ -621,53 +621,53 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 ** Wgrep
 Like =wdired= for =rgrep= and =ag-project=.
 
-- =C-c C-p= to enable (=wgrep-change-to-wgrep-mode=)
-- =C-c C-c= to execute
-- =C-c C-k= to abort
+  - =C-c C-p= to enable (=wgrep-change-to-wgrep-mode=)
+  - =C-c C-c= to execute
+  - =C-c C-k= to abort
 
-#+BEGIN_SRC emacs-lisp
-(use-package wgrep
-  :ensure t
-  :config
-  (setq wgrep-auto-save-buffer t))
-#+END_SRC
+    #+BEGIN_SRC emacs-lisp
+    (use-package wgrep
+      :ensure t
+      :config
+      (setq wgrep-auto-save-buffer t))
+    #+END_SRC
 
 ** Ripgrep
 =rg.el= provides a nice interface on top of =rgrep= and includes support for =wgrep=.
 
 Results Buffer:
-- =m= Open menu
-- =e= Toggle wgrep
-- =t= Interpret search string literally
-- =r= Interpret search string as regexp
-- =c= Toggle case sensitivity
-- =g= Rerun search
+  - =m= Open menu
+  - =e= Toggle wgrep
+  - =t= Interpret search string literally
+  - =r= Interpret search string as regexp
+  - =c= Toggle case sensitivity
+  - =g= Rerun search
 
-#+begin_src emacs-lisp
-(use-package rg
-  :ensure t
-  :config
-  (rg-define-search my/rg-project
-    "Search for any files in project or current directory"
-    :query ask
-    :format literal
-    :confirm prefix
-    :files "everything"
-    :flags ("--hidden -g !.git")
-    :dir (if (vc-root-dir)
-             (vc-root-dir)
-           default-directory)))
-#+end_src
+    #+begin_src emacs-lisp
+    (use-package rg
+      :ensure t
+      :config
+      (rg-define-search my/rg-project
+        "Search for any files in project or current directory"
+        :query ask
+        :format literal
+        :confirm prefix
+        :files "everything"
+        :flags ("--hidden -g !.git")
+        :dir (if (vc-root-dir)
+                 (vc-root-dir)
+               default-directory)))
+    #+end_src
 
 ** Fzf
-- =M-x fzf-git-files=
-- =M-x fzf-directory=
-- =M-x fzf-recentf=
+  - =M-x fzf-git-files=
+  - =M-x fzf-directory=
+  - =M-x fzf-recentf=
 
-#+begin_src emacs-lisp
-(use-package fzf
-  :ensure t)
-#+end_src
+    #+begin_src emacs-lisp
+    (use-package fzf
+      :ensure t)
+    #+end_src
 
 ** Rainbow Mode
 =rainbow-mode= highlights color codes in a given buffer.
@@ -950,9 +950,9 @@ Expansions can be either global or local to a specific major mode.
              (this-win-edges (window-edges (selected-window)))
              (next-win-edges (window-edges (next-window)))
              (this-win-2nd (not (and (<= (car this-win-edges)
-                                        (car next-win-edges))
+                                         (car next-win-edges))
                                      (<= (cadr this-win-edges)
-                                        (cadr next-win-edges)))))
+                                         (cadr next-win-edges)))))
              (splitter
               (if (= (car this-win-edges)
                      (car (window-edges (next-window))))
@@ -1006,9 +1006,9 @@ Expansions can be either global or local to a specific major mode.
   "Perform a bunch of operations on the whitespace content of a buffer.
 Including indent-buffer, which should not be called automatically on save."
   (interactive)
-  (untabify-buffer)
+  (my/untabify-buffer)
   (delete-trailing-whitespace)
-  (indent-buffer))
+  (my/indent-buffer))
 #+END_SRC
 
 ** Rename Buffer & File
