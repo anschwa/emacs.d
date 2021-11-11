@@ -252,8 +252,11 @@ Exchange startup time for elegance:
 ;; Window Navigation
 (global-set-key (kbd "M-o") 'other-window)
 
+;; Buffer Navigation
+(global-set-key (kbd "C-x C-b") 'switch-to-buffer)
+
 ;; Cycle Whitespace
-(global-set-key (kbd "M-SPC") 'cycle-spacing)
+(global-set-key (kbd "C-c C-SPC") 'cycle-spacing)
 
 ;; Window splitting
 (global-set-key (kbd "M-0") 'delete-window)
@@ -286,7 +289,7 @@ Exchange startup time for elegance:
 ** Mode Line
 #+BEGIN_SRC emacs-lisp
 ;; Remove all minor modes (mode-line-modes)
-(setq mode-line-format
+(setq-default mode-line-format
       '("%e"
         mode-line-front-space
         mode-line-mule-info
@@ -601,7 +604,8 @@ go get -u golang.org/x/tools/gopls
     (setq-default tab-width 4)
     (add-hook 'before-save-hook 'gofmt-before-save)
     (set (make-local-variable 'compile-command)
-         "go test"))
+         "go test")
+    (eglot-ensure))
   :hook ((go-mode . my/go-mode-hook)))
 #+END_SRC
 
@@ -690,7 +694,14 @@ Results Buffer:
 
   #+begin_src emacs-lisp
   (use-package fzf
-    :ensure t)
+    :ensure t
+    :config
+    (defun my/fzf-find-file()
+      (interactive)
+      (if (vc-root-dir)
+          (fzf-git-files)
+        (fzf-directory)))
+    :bind ("M-SPC" . my/fzf-find-file))
   #+end_src
 
 ** Rainbow Mode
