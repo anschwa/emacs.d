@@ -234,7 +234,10 @@ Exchange startup time for elegance:
 (global-set-key (kbd "C-x r q") 'save-buffers-kill-terminal)
 (global-set-key (kbd "C-x C-c") 'delete-frame)
 
-;; Symbol completion
+;; Dvorak
+(global-set-key (kbd "C-t") ctl-x-map)
+
+;; symbol completion
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq tab-always-indent 'complete)
