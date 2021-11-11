@@ -207,7 +207,7 @@ Exchange startup time for elegance:
 (use-package smex
   :ensure t
   :commands (smex smex-major-mode-commands)
-  :bind (("M-SPC" . smex)))
+  :bind (("M-t" . smex)))
 
 ;; Recent Files
 (use-package recentf
@@ -253,7 +253,7 @@ Exchange startup time for elegance:
 (global-set-key (kbd "M-o") 'other-window)
 
 ;; Cycle Whitespace
-(global-set-key (kbd "C-c C-SPC") 'cycle-spacing)
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
 
 ;; Window splitting
 (global-set-key (kbd "M-0") 'delete-window)
