@@ -185,97 +185,98 @@
 
 * Better Package Defaults
   #+BEGIN_SRC emacs-lisp
-    ;; Ido, Yes!
-    (use-package ido
-      :config
-      (setq ido-enable-flex-matching t)
-      (setq ido-default-buffer-method 'selected-window)
-      (ido-mode t))
+  ;; Add parts of each file's directory to the buffer name if not unique
+  (use-package uniquify
+    :config
+    (setq uniquify-buffer-name-style 'forward))
 
-    ;; Add parts of each file's directory to the buffer name if not unique
-    (use-package uniquify
-      :config
-      (setq uniquify-buffer-name-style 'forward))
+  ;; Save point position between sessions.
+  (use-package saveplace
+    :config
+    (setq-default save-place t)
+    (setq save-place-file (expand-file-name "places" user-emacs-directory)))
 
-    ;; Save point position between sessions.
-    (use-package saveplace
-      :config
-      (setq-default save-place t)
-      (setq save-place-file (expand-file-name "places" user-emacs-directory)))
+  ;; Ido
+  (use-package ido
+    :config
+    (setq ido-enable-flex-matching t)
+    (setq ido-default-buffer-method 'selected-window)
+    (ido-mode t))
 
-    ;; Recent Files
-    (use-package recentf
-      :config
-      (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
-      (setq recentf-max-saved-items 100)
-      (setq recentf-max-menu-items 15)
-      (recentf-mode t))
+  ;; Smex (ido for M-x)
+  (use-package smex
+    :ensure t
+    :commands (smex smex-major-mode-commands)
+    :bind (("M-SPC" . smex)))
+
+  ;; Recent Files
+  (use-package recentf
+    :config
+    (setq recentf-auto-cleanup 'never) ;; prevent issues with Tramp
+    (setq recentf-max-saved-items 100)
+    (setq recentf-max-menu-items 15)
+    (recentf-mode t)
 
     (defun my/recentf-ido-find-file ()
-      "Find a recent file using ido."
-      (interactive)
-      (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-        (when file
-          (find-file file))))
+    "Find a recent file using ido."
+    (interactive)
+    (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+      (when file
+        (find-file file))))
+
+    :bind ("C-x f" . my/recentf-ido-find-file))
   #+END_SRC
 
 * Global Keybindings
   #+BEGIN_SRC emacs-lisp
-    ;; Ido
-    (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-    (global-set-key (kbd "C-x f") 'my/recentf-ido-find-file)
+  ;; Exiting
+  ;; The mnemonic is C-x REALLY QUIT
+  (global-set-key (kbd "C-x r q") 'save-buffers-kill-terminal)
+  (global-set-key (kbd "C-x C-c") 'delete-frame)
 
-    ;; Exiting
-    ;; The mnemonic is C-x REALLY QUIT
-    (global-set-key (kbd "C-x r q") 'save-buffers-kill-terminal)
-    (global-set-key (kbd "C-x C-c") 'delete-frame)
+  ;; Symbol completion
+  (global-set-key (kbd "M-/") 'hippie-expand)
 
-    ;; Symbol completion
-    (global-set-key (kbd "M-/") 'hippie-expand)
+  (setq tab-always-indent 'complete)
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-from-kill
+          try-expand-dabbrev-all-buffers
+          try-complete-file-name
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol))
 
-    (setq tab-always-indent 'complete)
-    (setq hippie-expand-try-functions-list
-          '(try-expand-dabbrev
-            try-expand-dabbrev-from-kill
-            try-expand-dabbrev-all-buffers
-            try-complete-file-name
-            try-complete-lisp-symbol-partially
-            try-complete-lisp-symbol))
+  ;; Window Navigation
+  (global-set-key (kbd "M-o") 'other-window)
 
-    ;; Set Regexp Alignment
-    (global-set-key (kbd "C-x a r") 'align-regexp)
+  ;; Cycle Whitespace
+  (global-set-key (kbd "C-c C-SPC") 'cycle-spacing)
 
-    ;; Window Navigation
-    (global-set-key (kbd "M-o") 'other-window)
+  ;; Window splitting
+  (global-set-key (kbd "M-0") 'delete-window)
+  (global-set-key (kbd "M-1") 'delete-other-windows)
+  (global-set-key (kbd "M-2") 'split-window-vertically)
+  (global-set-key (kbd "M-3") 'split-window-horizontally)
+  (global-set-key (kbd "M-=") 'balance-windows)
 
-    ;; Cycle Whitespace
-    (global-set-key (kbd "M-SPC") 'cycle-spacing)
+  ;; More parity with readline
+  (defun my/backward-kill-word (&optional arg)
+    "kill active region or one word backward"
+    (interactive "p")
+    (if (region-active-p)
+        (kill-region (region-beginning) (region-end))
+      (backward-kill-word arg)))
 
-    ;; Window splitting
-    (global-set-key (kbd "M-0") 'delete-window)
-    (global-set-key (kbd "M-1") 'delete-other-windows)
-    (global-set-key (kbd "M-2") 'split-window-vertically)
-    (global-set-key (kbd "M-3") 'split-window-horizontally)
-    (global-set-key (kbd "M-=") 'balance-windows)
+  (global-set-key (kbd "C-h") 'backward-delete-char) ; help is still available with M-x describe-*
+  (global-set-key (kbd "C-w") 'my/backward-kill-word)
 
-    ;; More parity with readline
-    (global-set-key (kbd "C-h") 'backward-delete-char) ; help is still available with M-x describe-*
-    (global-set-key (kbd "C-w") 'my/backward-kill-word)
-
-    (defun my/backward-kill-word (&optional arg)
-      "kill active region or one word backward"
-      (interactive "p")
-      (if (region-active-p)
-          (kill-region (region-beginning) (region-end))
-        (backward-kill-word arg)))
-
-    ;; Unset keys
-    (dolist (keys '("<M-up>" "<M-down>" "<s-left>" "<s-right>"
-                    "s-c" "s-v" "s-x" "s-v" "s-q" "s-s" "s-w"
-                    "s-a" "s-o" "s-n" "s-p" "s-k" "s-u" "s-m"
-                    "s-f" "s-z" "s-g" "s-d" "s-," "s-:" "s-e"
-                    "s-t" "C-z" "C-\\" "C-M-i"))
-      (global-unset-key (kbd keys)))
+  ;; Unset keys
+  (dolist (keys '("<M-up>" "<M-down>" "<s-left>" "<s-right>"
+                  "s-c" "s-v" "s-x" "s-v" "s-q" "s-s" "s-w"
+                  "s-a" "s-o" "s-n" "s-p" "s-k" "s-u" "s-m"
+                  "s-f" "s-z" "s-g" "s-d" "s-," "s-:" "s-e"
+                  "s-t" "C-z" "C-\\" "C-M-i"))
+    (global-unset-key (kbd keys)))
   #+END_SRC
 
 * Appearance
@@ -585,11 +586,8 @@ go get -u golang.org/x/tools/gopls
 (use-package magit
   :ensure t
   :commands (magit-section-toggle)
-  :diminish magit-auto-revert-mode
   :bind (:map magit-mode-map
-              ("<tab>" . magit-section-toggle))
-  :config
-  (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
+              ("<tab>" . magit-section-toggle)))
 #+END_SRC
 
 ** Ediff
@@ -620,6 +618,57 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 #+END_SRC
 
 * Minor Modes
+** Wgrep
+Like =wdired= for =rgrep= and =ag-project=.
+
+- =C-c C-p= to enable (=wgrep-change-to-wgrep-mode=)
+- =C-c C-c= to execute
+- =C-c C-k= to abort
+
+#+BEGIN_SRC emacs-lisp
+(use-package wgrep
+  :ensure t
+  :config
+  (setq wgrep-auto-save-buffer t))
+#+END_SRC
+
+** Ripgrep
+=rg.el= provides a nice interface on top of =rgrep= and includes support for =wgrep=.
+
+Results Buffer:
+- =m= Open menu
+- =e= Toggle wgrep
+- =t= Interpret search string literally
+- =r= Interpret search string as regexp
+- =c= Toggle case sensitivity
+- =g= Rerun search
+
+#+begin_src emacs-lisp
+(use-package rg
+  :ensure t
+  :config
+  (rg-define-search my/rg-project
+    "Search for any files in project or current directory"
+    :query ask
+    :format literal
+    :confirm prefix
+    :files "everything"
+    :flags ("--hidden -g !.git")
+    :dir (if (vc-root-dir)
+             (vc-root-dir)
+           default-directory)))
+#+end_src
+
+** Fzf
+- =M-x fzf-git-files=
+- =M-x fzf-directory=
+- =M-x fzf-recentf=
+
+#+begin_src emacs-lisp
+(use-package fzf
+  :ensure t)
+#+end_src
+
 ** Rainbow Mode
 =rainbow-mode= highlights color codes in a given buffer.
 #+BEGIN_SRC emacs-lisp
@@ -876,7 +925,7 @@ Expansions can be either global or local to a specific major mode.
 * Custom Functions
 ** Create new scratch buffer
 #+BEGIN_SRC emacs-lisp
-(defun create-scratch-buffer nil
+(defun my/create-scratch-buffer nil
   "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
   (interactive)
   (let ((n 0)
@@ -893,7 +942,7 @@ Expansions can be either global or local to a specific major mode.
 
 ** Toggle Window Split
 #+BEGIN_SRC emacs-lisp
-(defun toggle-window-split ()
+(defun my/toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
@@ -921,7 +970,7 @@ Expansions can be either global or local to a specific major mode.
 
 ** Rotate Windows
 #+BEGIN_SRC emacs-lisp
-(defun rotate-windows ()
+(defun my/rotate-windows ()
   "Rotate your windows"
   (interactive)
   (cond ((not (> (count-windows)1))
@@ -945,15 +994,15 @@ Expansions can be either global or local to a specific major mode.
 
 ** Cleanup Buffer
 #+BEGIN_SRC emacs-lisp
-(defun untabify-buffer ()
+(defun my/untabify-buffer ()
   (interactive)
   (untabify (point-min) (point-max)))
 
-(defun indent-buffer ()
+(defun my/indent-buffer ()
   (interactive)
   (indent-region (point-min) (point-max)))
 
-(defun cleanup-buffer ()
+(defun my/cleanup-buffer ()
   "Perform a bunch of operations on the whitespace content of a buffer.
 Including indent-buffer, which should not be called automatically on save."
   (interactive)
@@ -964,7 +1013,7 @@ Including indent-buffer, which should not be called automatically on save."
 
 ** Rename Buffer & File
 #+BEGIN_SRC emacs-lisp
-(defun rename-current-buffer-file ()
+(defun my/rename-current-buffer-file ()
   "Renames current buffer and file it is visiting."
   (interactive)
   (let ((name (buffer-name))
@@ -984,7 +1033,7 @@ Including indent-buffer, which should not be called automatically on save."
 
 ** Delete Buffer & File
 #+BEGIN_SRC emacs-lisp
-(defun delete-current-buffer-file ()
+(defun my/delete-current-buffer-file ()
   "Removes file connected to current buffer and kills buffer."
   (interactive)
   (let ((filename (buffer-file-name))
