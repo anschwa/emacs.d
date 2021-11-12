@@ -67,11 +67,9 @@ Exchange startup time for elegance:
 (setq create-lockfiles nil)
 
 ;; Keep emacs Custom-settings in separate file.
-(let ((file (expand-file-name "custom.el" user-emacs-directory)))
-  (when (not (file-exists-p file))
-    (with-temp-buffer (write-file file))))
-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (not (file-exists-p custom-file))
+  (write-region "" nil custom-file))
 (load custom-file)
 #+END_SRC
 
