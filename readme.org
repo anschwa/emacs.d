@@ -567,6 +567,13 @@ system.
   (setq css-indent-offset 2))
 #+END_SRC
 
+** Javascript
+#+begin_src emacs-lisp
+(use-package js
+  :config
+  (setq js-indent-level 2))
+#+end_src
+
 ** Compilation Mode
 #+BEGIN_SRC emacs-lisp
 (add-hook 'compilation-mode-hook (lambda () (setq truncate-lines t)))
@@ -608,7 +615,14 @@ go get -u golang.org/x/tools/gopls
 #+END_SRC
 
 ** Magit
-#+BEGIN_SRC emacs-lisp
+Magit is an amazing interface for using =git= within Emacs.
+
+One of my favorite features is being able to quickly cycle through the
+history of the file I'm looking at. To do this, execute
+=magit-file-dispatch= (=C-c M-g=) and then use =n= and =p= to load the
+file history into a read-only buffer.
+
+#+Begin_SRC emacs-lisp
 (use-package magit
   :ensure t
   :commands (magit-section-toggle)
@@ -639,7 +653,7 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 (use-package dired
   :config
   (setq dired-dwim-target t)
-  (setq dired-listing-switches "-AFlvh --group-directories") ; ls flags
+  (setq dired-listing-switches "-Alpvh --group-directories") ; ls flags
   :hook ((dired-after-readin . hl-line-mode)))
 #+END_SRC
 
