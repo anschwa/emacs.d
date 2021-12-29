@@ -53,12 +53,14 @@ Exchange startup time for elegance:
 (add-hook 'makefile-mode-hook 'indent-tabs-mode)
 
 ;; Keep files clean.
+(setq-default show-trailing-whitespace t)
 (add-hook 'before-save-hook 'whitespace-cleanup)
 #+END_SRC
 
 * Housekeeping
 #+BEGIN_SRC emacs-lisp
 ;; Write backup files to their own directory
+(setq backup-by-copying t)
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
                  (concat user-emacs-directory "backups")))))
@@ -606,7 +608,7 @@ go get -u golang.org/x/tools/gopls
   :ensure t
   :config
   (defun my/go-mode-hook()
-    (setq-default tab-width 4)
+    (setq-default tab-width 2)
     (add-hook 'before-save-hook 'gofmt-before-save)
     (set (make-local-variable 'compile-command)
          "go test")
@@ -1138,5 +1140,6 @@ Operate on selected region on whole buffer."
 
 * Server / Client
 #+BEGIN_SRC emacs-lisp
-(server-start)
+(unless (server-running-p)
+  (server-start))
 #+END_SRC
