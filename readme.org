@@ -115,6 +115,9 @@ Exchange startup time for elegance:
 ;; Auto-close brackets and double quotes
 (electric-pair-mode 1)
 
+;; Don't automatically indent lines
+(electric-indent-mode -1)
+
 ;; Answering just 'y' or 'n' will do
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -499,6 +502,12 @@ system.
             '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
       (message "org-latex-pdf-process: xelatex"))))
 #+END_SRC
+
+Include syntax highlighting when exporting Org documents to HTML.
+#+begin_src emacs-lisp
+(use-package htmlize
+  :ensure t)
+#+end_src
 
 ** C-Family
 #+BEGIN_SRC emacs-lisp
@@ -1140,6 +1149,5 @@ Operate on selected region on whole buffer."
 
 * Server / Client
 #+BEGIN_SRC emacs-lisp
-(unless (server-running-p)
-  (server-start))
+(server-start)
 #+END_SRC
