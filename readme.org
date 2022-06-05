@@ -617,7 +617,8 @@ go get -u golang.org/x/tools/gopls
   :ensure t
   :config
   (defun my/go-mode-hook()
-    (setq-default tab-width 2)
+    (setq tab-width 2)
+    (setq gofmt-args '("-s"))
     (add-hook 'before-save-hook 'gofmt-before-save)
     (set (make-local-variable 'compile-command)
          "go test")
