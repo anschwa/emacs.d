@@ -26,9 +26,10 @@ session.*
 smex-items
 themes
 tramp
-tramp
 transient/
 url
 viper
 .lsp*
 image-dired/
+eln-cache/
+

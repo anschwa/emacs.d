@@ -337,68 +337,23 @@ Exchange startup time for elegance:
 #+END_SRC
 
 ** Theme
+Emacs 28.1 now includes the [[https://www.gnu.org/software/emacs/manual/html_mono/modus-themes.html][Modus Themes]], which were carefully
+designed to comply with the highest accessibility standard for color
+contrast and supports nearly all of the popular third-party Emacs
+packages as well.
+
+However, I find mainstream syntax highlighting a bit excessive, so I
+prefer to disable some of the programming related font-faces via =customize-face=.
+
+
+
 #+BEGIN_SRC emacs-lisp
-(let ((dir (expand-file-name "themes" user-emacs-directory)))
-  (when (not (file-directory-p dir))
-    (make-directory dir)))
-
-(setq custom-theme-directory (concat user-emacs-directory "themes/"))
-(load-theme 'stoneware t)
-#+END_SRC
-
-Stoneware is a bare-bones Emacs theme I came up with designed to
-respect the default colors as much as possible. It borrows from
-the ideas expressed in other color schemes such as [[https://ethanschoonover.com/solarized/][Solarized]] and
-[[https://github.com/robertmeta/nofrils][nofrils]], as well as the [[http://acme.cat-v.org/][ACME]] editor from Plan 9.
-
-However, some packages set their own styles instead of inheriting
-from the standard =font-lock-faces=, in which case I will usually
-make adjustments with =M-x customize-face= rather than including
-edge-cases in the theme itself.
-
-This theme gets written to disk when Emacs starts up.
-
-#+BEGIN_SRC emacs-lisp :tangle ./themes/stoneware-theme.el
-(deftheme stoneware)
-
-(let ((color00 "#fdf6e3")  ; default background
-      (color01 "#fbeecb")  ; lighter background
-      (color02 "#d6d6d6")  ; selection background
-      (color03 "#f8df9c")  ; line highlighting
-      (color04 "#5c5c5c")  ; dark foreground
-      (color05 "#000000")  ; default foreground
-      (color06 "#a3a3a3")  ; light foreground
-      (color07 "#a52a2a")) ; accented foreground
-
-  (custom-theme-set-faces
-   'stoneware
-   `(default             ((t (:foreground ,color05 :background ,color00))))
-   `(cursor              ((t (:foreground ,color00 :background ,color05))))
-   `(region              ((t (:background ,color02))))
-   `(highlight           ((t (:background ,color03))))
-   `(shadow              ((t :foreground ,color04)))
-   `(fringe              ((t (:background ,color00))))
-   `(secondary-selection ((t :background ,color03)))
-   `(minibuffer-prompt   ((t (:foreground ,color05))))
-   `(mode-line           ((t (:foreground ,color05 :background ,color02 :box nil))))
-   `(mode-line-buffer-id ((t :weight bold)))
-   `(mode-line-inactive  ((t (:foreground ,color06 :background ,color01 :box nil))))
-   `(line-number         ((t (:foreground ,color06))))
-
-    ;;; enable minimal syntax highlighting
-   '(font-lock-builtin-face ((t (:weight bold))))
-   `(font-lock-comment-face ((t (:foreground ,color04))))
-   `(font-lock-string-face  ((t (:foreground ,color07))))
-
-    ;;; disable unwanted styles
-   '(font-lock-constant-face      ((t nil)))
-   '(font-lock-function-name-face ((t nil)))
-   '(font-lock-keyword-face       ((t nil)))
-   '(font-lock-negation-char-face ((t nil)))
-   '(font-lock-type-face          ((t nil)))
-   '(font-lock-variable-name-face ((t nil)))))
-
-(provide-theme 'stoneware)
+(use-package emacs
+  :init
+  (setq modus-themes-syntax '(faint yellow-comments))
+  (setq modus-themes-paren-match '(intense))
+  :config
+  (load-theme 'modus-operandi))
 #+END_SRC
 
 * Major Modes
@@ -724,7 +679,7 @@ Results Buffer:
       (interactive)
       (if (vc-root-dir)
           (fzf-git-files)
-        (fzf-directory)))
+        (fzf-find-file)))
     :bind ("M-SPC" . my/fzf-find-file))
   #+end_src
 
