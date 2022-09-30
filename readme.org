@@ -352,6 +352,7 @@ prefer to disable some of the programming related font-faces via =customize-face
   :init
   (setq modus-themes-syntax '(faint yellow-comments))
   (setq modus-themes-paren-match '(intense))
+  (setq modus-themes-org-blocks 'gray-background)
   :config
   (load-theme 'modus-operandi))
 #+END_SRC
