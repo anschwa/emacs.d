@@ -301,10 +301,10 @@ Exchange startup time for elegance:
         mode-line-remote
         mode-line-frame-identification
         mode-line-buffer-identification
-        "   "
+        "    "
         mode-line-position
         (vc-mode vc-mode)
-        " (%m) " ; s/mode-line-modes/mode-name
+        " (" mode-name ") "
         mode-line-misc-info
         mode-line-end-spaces))
 
@@ -344,8 +344,6 @@ packages as well.
 
 However, I find mainstream syntax highlighting a bit excessive, so I
 prefer to disable some of the programming related font-faces via =customize-face=.
-
-
 
 #+BEGIN_SRC emacs-lisp
 (use-package emacs
@@ -476,13 +474,43 @@ Include syntax highlighting when exporting Org documents to HTML.
 #+END_SRC
 
 ** Ruby
+The standard ~ruby-mode~ is pretty good on its own. In fact, it is
+written and maintained by "Matz", who is the creator of Ruby itself.
+
+However, you can get more linting data by using ~rubocop~, and
+~solargraph~ is the canonical language server.
+
+I still think ~ctags~ is much better at finding definitions in large
+projects, but it's nice to have the language server available too.
+
+#+begin_src text
+gem install rubocop solargraph solargraph-rails
+#+end_src
+
+This will generate a ~tags~ file for your entire project along with all your dependencies.
+#+begin_src text
+bundle install && bundle show --paths | xargs ctags -eR
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
 (use-package ruby-mode
   :ensure t
   :config
-  (setq ruby-align-to-stmt-keywords nil)
-  (setq ruby-insert-encoding-magic-comment nil))
+  (defun my/ruby-mode-hook()
+    (setq tab-width 2)
+    (setq ruby-align-to-stmt-keywords nil)
+    (setq ruby-insert-encoding-magic-comment nil)
+    (setq flymake-mode 1)
+    (setq eldoc-mode 1))
+  :hook ((ruby-mode . my/ruby-mode-hook)))
 #+END_SRC
+
+#+begin_src emacs-lisp
+(use-package rubocop
+  :ensure t
+  :config
+  (add-hook 'ruby-mode-hook #'rubocop-mode))
+#+end_src
 
 ** Web Mode
 - =C-c C-f=: folds html tags
@@ -1087,7 +1115,7 @@ Operate on selected region on whole buffer."
 #+BEGIN_SRC emacs-lisp
 ;; Are we on a Mac?
 (when (equal system-type 'darwin)
-  (add-hook 'after-make-frame-functions 'contextual-menubar)
+  (add-hook 'after-make-frame-functions 'menu-bar-mode)
 
   ;; Set modifier keys
   (setq mac-command-modifier 'super)
@@ -1099,7 +1127,6 @@ Operate on selected region on whole buffer."
   (setq mac-right-option-modifier 'none)
 
   ;; Set paths to homebrew installed programs.
-  (exec-path-from-shell-initialize)
   (progn
     (setq-default ispell-program-name "/usr/local/bin/aspell")))
 #+END_SRC
