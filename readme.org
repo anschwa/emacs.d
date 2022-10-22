@@ -551,7 +551,8 @@ bundle install && bundle show --paths | xargs ctags -eR
     (font-lock-flush))
   :hook ((sgml-mode . emmet-mode)
          (web-mode . emmet-mode)
-         (css-mode . emmet-mode)))
+         (css-mode . emmet-mode)
+         (js-jsx-mode . emmet-mode)))
 #+END_SRC
 
 ** CSS
@@ -649,7 +650,7 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 (use-package dired
   :config
   (setq dired-dwim-target t)
-  (setq dired-listing-switches "-Alpvh --group-directories") ; ls flags
+  (setq dired-listing-switches "-Alpvh") ; ls flags
   :hook ((dired-after-readin . hl-line-mode)))
 #+END_SRC
 
