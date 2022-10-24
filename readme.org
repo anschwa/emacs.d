@@ -2,7 +2,7 @@
 #+OPTIONS: ':true *:true num:nil
 
 * Description
-This configuration is designed for Emacs 27 and above. This file
+This configuration is designed for Emacs 28 and above. This file
 includes everything required to setup my environment.
 
 If starting Emacs for the first time using this configuration, you
@@ -27,7 +27,7 @@ Exchange startup time for elegance:
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; No splash screen please.
+;; No splash screen.
 (setq inhibit-startup-message t)
 
 ;; No fascists.
@@ -39,7 +39,7 @@ Exchange startup time for elegance:
 ;; No alarms.
 (setq ring-bell-function 'ignore)
 
-;; Change Cursor
+;; Change cursor.
 (setq-default cursor-type 'box)
 (blink-cursor-mode -1)
 
@@ -77,6 +77,9 @@ Exchange startup time for elegance:
 
 * Better Defaults
 #+BEGIN_SRC emacs-lisp
+;; Line Numbers
+(global-display-line-numbers-mode t)
+
 ;; Fix empty clipboard error.
 (setq save-interprogram-paste-before-kill nil)
 
@@ -199,18 +202,16 @@ Exchange startup time for elegance:
   (setq-default save-place t)
   (setq save-place-file (expand-file-name "places" user-emacs-directory)))
 
-;; Ido
-(use-package ido
+;; Fido (icomplete now includes fuzzy matching for M-x and other completions)
+(use-package icomplete
+  :demand t
   :config
-  (setq ido-enable-flex-matching t)
-  (setq ido-default-buffer-method 'selected-window)
-  (ido-mode t))
-
-;; Smex (ido for M-x)
-(use-package smex
-  :ensure t
-  :commands (smex smex-major-mode-commands)
-  :bind (("M-t" . smex)))
+  (add-hook 'icomplete-minibuffer-setup-hook
+            (lambda () (setq-local max-mini-window-height 10)))
+  (fido-vertical-mode 1)
+  :bind (:map icomplete-fido-mode-map
+   ("RET" . icomplete-fido-ret)
+   ("TAB" . icomplete-force-complete)))
 
 ;; Recent Files
 (use-package recentf
@@ -223,7 +224,7 @@ Exchange startup time for elegance:
   (defun my/recentf-ido-find-file ()
     "Find a recent file using ido."
     (interactive)
-    (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (let ((file (completing-read "Choose recent file: " recentf-list nil t)))
       (when file
         (find-file file))))
 
@@ -239,8 +240,9 @@ Exchange startup time for elegance:
 
 ;; Dvorak
 (global-set-key (kbd "C-t") ctl-x-map)
+(global-set-key (kbd "M-t") 'execute-extended-command)
 
-;; symbol completion
+;; Symbol completion
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq tab-always-indent 'complete)
@@ -316,26 +318,6 @@ Exchange startup time for elegance:
 (display-time)
 #+END_SRC
 
-** Miscellaneous
-#+BEGIN_SRC emacs-lisp
-;; Line Numbers
-(global-display-line-numbers-mode t)
-
-;; Default Font
-;; The easiest way to set the default font is to use the menu.
-;; (1) Options -> Set Default Font
-;; (2) Options -> Save Options
-(defun my/default-emacs-font ()
-  (interactive)
-  (cond
-   ((string-equal system-type "gnu/linux")
-    (define-key special-event-map [config-changed-event] 'ignore) ; prevent GConf from interfering
-    (set-frame-font "DejaVu Sans Mono 10" nil t))
-   ((string-equal system-type "darwin")
-    (set-frame-font "Menlo 12" nil t)))
-  )
-#+END_SRC
-
 ** Theme
 Emacs 28.1 now includes the [[https://www.gnu.org/software/emacs/manual/html_mono/modus-themes.html][Modus Themes]], which were carefully
 designed to comply with the highest accessibility standard for color
@@ -351,6 +333,14 @@ prefer to disable some of the programming related font-faces via =customize-face
   (setq modus-themes-syntax '(faint yellow-comments))
   (setq modus-themes-paren-match '(intense))
   (setq modus-themes-org-blocks 'gray-background)
+  :custom-face
+  (font-lock-builtin-face ((t (:inherit modus-themes-bold :foreground "nil" :weight bold))))
+  (font-lock-constant-face ((t (:foreground "nil"))))
+  (font-lock-function-name-face ((t (:foreground "nil"))))
+  (font-lock-keyword-face ((t (:inherit modus-themes-bold :foreground "nil" :weight bold))))
+  (font-lock-negation-char-face ((t (:foreground "nil"))))
+  (font-lock-type-face ((t (:foreground "nil"))))
+  (font-lock-variable-name-face ((t (:foreground "nil"))))
   :config
   (load-theme 'modus-operandi))
 #+END_SRC
@@ -364,22 +354,15 @@ system.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp
-(require 'org)
-(require 'ox)
-(require 'ob-core)
-(require 'org-agenda)
-(require 'org-capture)
-
 (use-package org
-  :ensure t
+  :requires (ob-core org-agenda org-capture ox ox-md)
   :mode ("\\.org\\'" . org-mode)
   :commands (org-babel-do-load-languages org-demote-subtree org-promote-subtree)
-  :bind (()
-         :map org-mode-map
+  :bind (:map org-mode-map
          ("<M-right>" . org-demote-subtree)
          ("<M-left>" . org-promote-subtree))
   :config
-  ;; Essential Settings
+  (setq org-export-backends '(ascii html icalendar latex odt md))
   (setq org-src-fontify-natively t)
   (setq org-log-done 'time)
   (setq org-html-doctype "html5")
@@ -521,6 +504,12 @@ bundle install && bundle show --paths | xargs ctags -eR
   (use-package web-mode
     :ensure t
     :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'" "\\.tmpl\\'")
+    :custom-face
+    (web-mode-doctype-face ((t (:inherit font-lock-builtin-face))))
+    (web-mode-html-attr-name-face ((t :foreground "nil")))
+    (web-mode-html-attr-value-face ((t (:inherit font-lock-string-face))))
+    (web-mode-html-tag-face ((t :foreground "nil")))
+    (web-mode-symbol-face ((t (:weight bold))))
     :config
     (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
     (setq web-mode-markup-indent-offset 2)
@@ -655,6 +644,13 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 #+END_SRC
 
 * Minor Modes
+** Project.el
+#+begin_src emacs-lisp
+(use-package project
+  :bind
+  ("M-SPC" . project-find-file))
+#+end_src
+
 ** Wgrep
 Like =wdired= for =rgrep= and =ag-project=.
 
@@ -694,23 +690,6 @@ Results Buffer:
       :dir (if (vc-root-dir)
                (vc-root-dir)
              default-directory)))
-  #+end_src
-
-** Fzf
-- =M-x fzf-git-files=
-- =M-x fzf-directory=
-- =M-x fzf-recentf=
-
-  #+begin_src emacs-lisp
-  (use-package fzf
-    :ensure t
-    :config
-    (defun my/fzf-find-file()
-      (interactive)
-      (if (vc-root-dir)
-          (fzf-git-files)
-        (fzf-find-file)))
-    :bind ("M-SPC" . my/fzf-find-file))
   #+end_src
 
 ** Rainbow Mode
@@ -1116,7 +1095,7 @@ Operate on selected region on whole buffer."
 #+BEGIN_SRC emacs-lisp
 ;; Are we on a Mac?
 (when (equal system-type 'darwin)
-  (add-hook 'after-make-frame-functions 'menu-bar-mode)
+  (menu-bar-mode 1)
 
   ;; Set modifier keys
   (setq mac-command-modifier 'super)
