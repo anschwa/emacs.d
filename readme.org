@@ -59,13 +59,11 @@ Exchange startup time for elegance:
 
 * Housekeeping
 #+BEGIN_SRC emacs-lisp
-;; Write backup files to their own directory
-(setq backup-by-copying t)
-(setq backup-directory-alist
-      `(("." . ,(expand-file-name
-                 (concat user-emacs-directory "backups")))))
+;; No backups or auto-save
+(setq auto-save-default nil)
+(setq make-backup-files nil)
 
-;; Don't write lock-files, I'm the only one here
+;; Don't write lock-files
 (setq create-lockfiles nil)
 
 ;; Keep emacs Custom-settings in separate file.
@@ -334,8 +332,9 @@ prefer to disable some of the programming related font-faces via =customize-face
   (setq modus-themes-paren-match '(intense))
   (setq modus-themes-org-blocks 'gray-background)
   :custom-face
+  (eglot-highlight-symbol-face ((t :inherit underline)))
   (font-lock-builtin-face ((t (:inherit modus-themes-bold :foreground "nil" :weight bold))))
-  (font-lock-constant-face ((t (:foreground "nil"))))
+  (font-lock-constant-face ((t (:inherit modus-themes-bold :foreground "nil" :weight bold))))
   (font-lock-function-name-face ((t (:foreground "nil"))))
   (font-lock-keyword-face ((t (:inherit modus-themes-bold :foreground "nil" :weight bold))))
   (font-lock-negation-char-face ((t (:foreground "nil"))))
@@ -463,16 +462,8 @@ written and maintained by "Matz", who is the creator of Ruby itself.
 However, you can get more linting data by using ~rubocop~, and
 ~solargraph~ is the canonical language server.
 
-I still think ~ctags~ is much better at finding definitions in large
-projects, but it's nice to have the language server available too.
-
 #+begin_src text
 gem install rubocop solargraph solargraph-rails
-#+end_src
-
-This will generate a ~tags~ file for your entire project along with all your dependencies.
-#+begin_src text
-bundle install && bundle show --paths | xargs ctags -eR
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
@@ -495,34 +486,46 @@ bundle install && bundle show --paths | xargs ctags -eR
   (add-hook 'ruby-mode-hook #'rubocop-mode))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package rspec-mode
+    :ensure t
+    :config
+    (defun my/rspec-compile()
+      (interactive)
+      (rspec-compile
+       (read-from-minibuffer
+        "Rspec: "
+        (format "%s:%d" buffer-file-name (line-number-at-pos))))))
+#+end_src
+
 ** Web Mode
 - =C-c C-f=: folds html tags
 - =C-c C-n=: moves between the start / end tag
 - =C-c C-w=: shows problematic white-space
 
   #+BEGIN_SRC emacs-lisp
-  (use-package web-mode
-    :ensure t
-    :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'" "\\.tmpl\\'")
-    :custom-face
-    (web-mode-doctype-face ((t (:inherit font-lock-builtin-face))))
-    (web-mode-html-attr-name-face ((t :foreground "nil")))
-    (web-mode-html-attr-value-face ((t (:inherit font-lock-string-face))))
-    (web-mode-html-tag-face ((t :foreground "nil")))
-    (web-mode-symbol-face ((t (:weight bold))))
-    :config
-    (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-css-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-    (setq web-mode-style-padding 0)
-    (setq web-mode-script-padding 0)
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'" "\\.tmpl\\'")
+  :custom-face
+  (web-mode-doctype-face ((t (:inherit font-lock-builtin-face))))
+  (web-mode-html-attr-name-face ((t :foreground "nil")))
+  (web-mode-html-attr-value-face ((t (:inherit font-lock-string-face))))
+  (web-mode-html-tag-face ((t :foreground "nil")))
+  (web-mode-symbol-face ((t (:weight bold))))
+  :config
+  (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-style-padding 0)
+  (setq web-mode-script-padding 0)
 
-    (defun my/web-mode-hook()
-      ;; Do not over-indent method chains
-      (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+  (defun my/web-mode-hook()
+    ;; Do not over-indent method chains
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
-    :hook ((web-mode . my/web-mode-hook)))
+  :hook ((web-mode . my/web-mode-hook)))
   #+END_SRC
 
 ** Emmet
@@ -587,17 +590,16 @@ go get -u golang.org/x/tools/gopls
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
-(use-package go-mode
-  :ensure t
-  :config
-  (defun my/go-mode-hook()
-    (setq tab-width 2)
-    (setq gofmt-args '("-s"))
-    (add-hook 'before-save-hook 'gofmt-before-save)
-    (set (make-local-variable 'compile-command)
-         "go test")
-    (eglot-ensure))
-  :hook ((go-mode . my/go-mode-hook)))
+  (use-package go-mode
+    :ensure t
+    :config
+    (defun my/go-mode-hook()
+      (setq tab-width 2)
+      (setq gofmt-args '("-s"))
+      (add-hook 'before-save-hook 'gofmt-before-save)
+      (setq-local compile-command "go test")
+      (eglot-ensure))
+    :hook ((go-mode . my/go-mode-hook)))
 #+END_SRC
 
 ** Magit
@@ -677,19 +679,19 @@ Results Buffer:
 - =g= Rerun search
 
   #+begin_src emacs-lisp
-  (use-package rg
-    :ensure t
-    :config
-    (rg-define-search my/rg-project
-      "Search for any files in project or current directory"
-      :query ask
-      :format literal
-      :confirm prefix
-      :files "everything"
-      :flags ("--hidden -g !.git")
-      :dir (if (vc-root-dir)
-               (vc-root-dir)
-             default-directory)))
+(use-package rg
+  :ensure t
+  :config
+  (rg-define-search my/rg-project
+    "Search for any files in project or current directory"
+    :query ask
+    :format literal
+    :confirm prefix
+    :files "everything"
+    :flags ("--hidden -g !.git")
+    :dir (if (vc-root-dir)
+             (vc-root-dir)
+           default-directory)))
   #+end_src
 
 ** Rainbow Mode
@@ -1079,15 +1081,16 @@ Including indent-buffer, which should not be called automatically on save."
 
 ** ANSI Color Codes
 #+BEGIN_SRC emacs-lisp
-(require 'ansi-color)
-(defun my/ansi-color (&optional beg end)
-  "Interpret ANSI color esacape sequence by colorifying cotent.
-Operate on selected region on whole buffer."
-  (interactive
-   (if (use-region-p)
-       (list (region-beginning) (region-end))
-     (list (point-min) (point-max))))
-  (ansi-color-apply-on-region beg end))
+(use-package ansi-color
+  :config
+  (defun my/ansi-color (&optional beg end)
+    "Interpret ANSI color esacape sequence by colorifying content. Operate on selected region or whole buffer."
+    (interactive
+     (if (use-region-p)
+         (list (region-beginning) (region-end))
+       (list (point-min) (point-max))))
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region beg end))))
 #+END_SRC
 
 * Miscellaneous
@@ -1095,19 +1098,21 @@ Operate on selected region on whole buffer."
 #+BEGIN_SRC emacs-lisp
 ;; Are we on a Mac?
 (when (equal system-type 'darwin)
-  (menu-bar-mode 1)
+  (use-package exec-path-from-shell
+    :ensure t
+    :init
+    (menu-bar-mode 1)
 
-  ;; Set modifier keys
-  (setq mac-command-modifier 'super)
-  (setq mac-option-modifier 'meta)
-  (setq mac-control-modifier 'control)
-  (setq ns-function-modifier 'hyper)
+    ;; Set modifier keys
+    (setq mac-command-modifier 'super)
+    (setq mac-option-modifier 'meta)
+    (setq mac-control-modifier 'control)
+    (setq ns-function-modifier 'hyper)
 
-  ;; Use right option for spacial characters.
-  (setq mac-right-option-modifier 'none)
+    ;; Use right option for spacial characters.
+    (setq mac-right-option-modifier 'none)
 
-  ;; Set paths to homebrew installed programs.
-  (progn
+    (exec-path-from-shell-initialize)
     (setq-default ispell-program-name "/usr/local/bin/aspell")))
 #+END_SRC
 
