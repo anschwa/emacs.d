@@ -22,39 +22,40 @@ Exchange startup time for elegance:
 
 * Essentials
 #+BEGIN_SRC emacs-lisp
-;; Turn off mouse interface early in startup to avoid momentary display.
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  ;; Turn off mouse interface early in startup to avoid momentary display.
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; No splash screen.
-(setq inhibit-startup-message t)
+  ;; No splash screen.
+  (setq inhibit-startup-message t)
 
-;; No fascists.
-(setq initial-scratch-message nil)
+  ;; No fascists.
+  (setq initial-scratch-message nil)
 
-;; Productive default mode.
-(setq initial-major-mode 'org-mode)
+  ;; No alarms.
+  (setq ring-bell-function 'ignore)
 
-;; No alarms.
-(setq ring-bell-function 'ignore)
+  ;; Productive default mode.
+  (setq initial-major-mode 'org-mode)
 
-;; Change cursor.
-(setq-default cursor-type 'box)
-(blink-cursor-mode -1)
+  ;; Change cursor.
+  (setq-default cursor-type 'box)
+  (blink-cursor-mode -1)
 
-;; When on a tab, make the cursor the tab length…
-(setq-default x-stretch-cursor t)
+  ;; When on a tab, make the cursor the tab length…
+  (setq-default x-stretch-cursor t)
 
-;; But never insert tabs…
-(set-default 'indent-tabs-mode nil)
+  ;; But never insert tabs…
+  (set-default 'indent-tabs-mode nil)
 
-;; Except in Makefiles.
-(add-hook 'makefile-mode-hook 'indent-tabs-mode)
+  ;; Except in Makefiles.
+  (add-hook 'makefile-mode-hook 'indent-tabs-mode)
 
-;; Keep files clean.
-(setq-default show-trailing-whitespace t)
-(add-hook 'before-save-hook 'whitespace-cleanup)
+  ;; Keep files clean.
+  (setq-default require-final-newline t)
+  (setq-default show-trailing-whitespace t)
+  (add-hook 'before-save-hook 'whitespace-cleanup)
 #+END_SRC
 
 * Housekeeping
@@ -66,7 +67,7 @@ Exchange startup time for elegance:
 ;; Don't write lock-files
 (setq create-lockfiles nil)
 
-;; Keep emacs Custom-settings in separate file.
+;; Keep emacs Custom-settings in separate file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (not (file-exists-p custom-file))
   (write-region "" nil custom-file))
@@ -78,7 +79,7 @@ Exchange startup time for elegance:
 ;; Line Numbers
 (global-display-line-numbers-mode t)
 
-;; Fix empty clipboard error.
+;; Fix empty clipboard error
 (setq save-interprogram-paste-before-kill nil)
 
 ;; Remove text in active region if inserting text
@@ -87,7 +88,7 @@ Exchange startup time for elegance:
 ;; Don't automatically copy selected text
 (setq select-enable-primary nil)
 
-;; Full path in frame title
+;; Full path in frame title.
 (setq frame-title-format '(buffer-file-name "%f" ("%b")))
 
 ;; Auto refresh buffers when edits occur outside emacs
@@ -136,7 +137,7 @@ Exchange startup time for elegance:
 ;; Wrap lines at 80 characters wide, not 72
 (setq fill-column 80)
 
-;; Smooth Scroll
+;; Smooth Scroll.
 (setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ; one line at a time
 
 ;; Scroll one line when hitting bottom of window
@@ -151,11 +152,11 @@ Exchange startup time for elegance:
 ;; Sentences do not need double spaces to end. Period.
 (set-default 'sentence-end-double-space nil)
 
-;; Don't use shift to mark things
+;; Don't use shift to mark things.
 (setq shift-select-mode nil)
 
 ;; eval-expression-print-level needs to be set to nil (turned off) so
-;; that you can always see what's happening.
+;; that you can always see what's happening
 (setq eval-expression-print-level nil)
 
 ;; Allow clipboard from outside emacs
@@ -192,7 +193,7 @@ Exchange startup time for elegance:
   :config
   (setq uniquify-buffer-name-style 'forward))
 
-;; Save point position between sessions.
+;; Save point position between sessions
 (use-package saveplace
   :config
   (setq-default save-place t)
@@ -320,8 +321,7 @@ designed to comply with the highest accessibility standard for color
 contrast and supports nearly all of the popular third-party Emacs
 packages as well.
 
-However, I find mainstream syntax highlighting a bit excessive, so I
-prefer to disable some of the programming related font-faces via =customize-face=.
+However, I like to disable some of the programming related font-faces via =customize-face=.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emacs
@@ -489,6 +489,8 @@ gem install rubocop solargraph solargraph-rails
   (use-package rspec-mode
     :ensure t
     :config
+    (setq rspec-primary-source-dirs '("app" "lib" "packs"))
+
     (defun my/rspec-compile()
       (interactive)
       (rspec-compile
@@ -741,143 +743,150 @@ like quotes, parens, or markup tags.
 into dynamic / static templates.
 
 #+BEGIN_SRC emacs-lisp
-;; Global
-(defun insert-date (str)
-  "Insert current date in ISO 8601.
-    Typing 'v' will insert the current date verbosely.
-    Typing 't' will append the time in H:M:S to either format."
-  (interactive "sType (v) for verbose date | (t) for time: ")
-  (if (string-match-p "v" str)
-      (insert (format-time-string "%B %e, %Y"))
-    (insert (format-time-string "%Y-%m-%d")))
-  (when (string-match-p "t" str)
-    (insert (format-time-string " %T"))))
+  ;; Global
+  (defun insert-date (str)
+    "Insert current date in ISO 8601.
+      Typing 'v' will insert the current date verbosely.
+      Typing 't' will append the time in H:M:S to either format."
+    (interactive "sType (v) for verbose date | (t) for time: ")
+    (if (string-match-p "v" str)
+        (insert (format-time-string "%B %e, %Y"))
+      (insert (format-time-string "%Y-%m-%d")))
+    (when (string-match-p "t" str)
+      (insert (format-time-string " %T"))))
 
-(define-skeleton insert-iso-date-skeleton
-  "Skeleton wrapper for INSERT-DATE"
-  "ISO Date"
-  '(insert-date ""))
+  (define-skeleton insert-iso-date-skeleton
+    "Skeleton wrapper for INSERT-DATE"
+    "ISO Date"
+    '(insert-date ""))
 
-(define-skeleton insert-verbose-date-skeleton
-  "Skeleton wrapper for INSERT-DATE"
-  "Verbose Date"
-  '(insert-date "v"))
+  (define-skeleton insert-verbose-date-skeleton
+    "Skeleton wrapper for INSERT-DATE"
+    "Verbose Date"
+    '(insert-date "v"))
 
-;; C
-(define-skeleton c-skeleton-hello
-  "Inserts a simple 'hello-world' program in C."
-  "Name: "
-  "#include<stdio.h>\n\n"
-  "int main (int argc, char *argv[]) {\n"
-  _  >"printf(\"%s\", \"Hello world.\\n\");\n"
-  >"return 0;\n"
-  "}\n")
+  ;; Org
+  (define-skeleton org-skeleton-header
+    "Insert document headers."
+    "Title: "
+    "#+TITLE: " str | (buffer-name) "\n"
+    "#+AUTHOR: " (user-full-name) "\n"
+    "#+DATE: " (insert-date "v") "\n"
+    "#+OPTIONS: ':true *:true toc:nil num:nil ^:nil\n" _)
 
-;; Org
-(define-skeleton org-skeleton-header
-  "Insert document headers."
-  "Title: "
-  "#+TITLE: " str | (buffer-name) "\n"
-  "#+AUTHOR: " (user-full-name) "\n"
-  "#+DATE: " (insert-date "v") "\n"
-  "#+OPTIONS: ':true *:true toc:nil num:nil ^:nil\n" _)
+  (define-skeleton org-skeleton-latex-header
+    "Insert document headers and essential LaTeX header options."
+    "options"
+    '(org-skeleton-header)
+    "\n#+LaTeX_HEADER: \\renewcommand{\\thesection}{\\hspace*{-1.0em}}\n"
+    "#+LaTeX_HEADER: \\renewcommand{\\thesubsection}{\\hspace*{-1.0em}}\n"
+    "#+LaTeX_HEADER: \\setlength{\\parindent}{0pt}\n"
+    "#+LaTeX_HEADER: \\usepackage[margin=1in]{geometry}\n" _)
 
-(define-skeleton org-skeleton-latex-header
-  "Insert document headers and essential LaTeX header options."
-  "options"
-  '(org-skeleton-header)
-  "\n#+LaTeX_HEADER: \\renewcommand{\\thesection}{\\hspace*{-1.0em}}\n"
-  "#+LaTeX_HEADER: \\renewcommand{\\thesubsection}{\\hspace*{-1.0em}}\n"
-  "#+LaTeX_HEADER: \\setlength{\\parindent}{0pt}\n"
-  "#+LaTeX_HEADER: \\usepackage[margin=1in]{geometry}\n" _)
+  ;; LaTeX
+  (define-skeleton latex-skeleton-begin
+    "Insert a LaTeX BEGIN block."
+    "Block type: "
+    "\\begin{" str | "align*" "}\n" _ "\n\\end{" str | "align*" "}\n")
 
-;; LaTeX
-(define-skeleton latex-skeleton-begin
-  "Insert a LaTeX BEGIN block."
-  "Block type: "
-  "\\begin{" str | "align*" "}\n" _ "\n\\end{" str | "align*" "}\n")
+  ;; BibTeX
+  (defun bibtex-insert-citation (str)
+    "Insert a BibTeX citation.
+    Begin by inserting the citation type, then call
+    BIBTEX-SKELETON-CITATION to prompt for a label and insert the rest."
+    (interactive "s(a)rticle | (b)ook | (c)ollection | (w)ebsite: ")
+    (let ((type))
+      (cond ((string-match-p "^a\\|rticle" str)
+             (setq type "article"))
+            ((string-match-p "^b\\|ook" str)
+             (setq type "book"))
+            ((string-match-p "^c\\|ollection" str)
+             (setq type "incollection"))
+            ((string-match-p "^w\\|ebsite" str)
+             (setq type "misc")))
+      (insert "@"type"{"))
+    (bibtex-skeleton-citation))
 
-;; BibTeX
-(defun bibtex-insert-citation (str)
-  "Insert a BibTeX citation.
-  Begin by inserting the citation type, then call
-  BIBTEX-SKELETON-CITATION to prompt for a label and insert the rest."
-  (interactive "s(a)rticle | (b)ook | (c)ollection | (w)ebsite: ")
-  (let ((type))
-    (cond ((string-match-p "^a\\|rticle" str)
-           (setq type "article"))
-          ((string-match-p "^b\\|ook" str)
-           (setq type "book"))
-          ((string-match-p "^c\\|ollection" str)
-           (setq type "incollection"))
-          ((string-match-p "^w\\|ebsite" str)
-           (setq type "misc")))
-    (insert "@"type"{"))
-  (bibtex-skeleton-citation))
+  (define-skeleton bibtex-skeleton-citation
+    "Insert the contents of a BibTeX citation starting with the label."
+    "Label: "
+    str | "label" ",\n"
+    >"author     = \"\",\n"
+    >"title      = \"\",\n"
+    >"%journal   = \"\",\n"
+    >"%booktitle = \"\",\n"
+    >"%publisher = \"\",\n"
+    >"%editor    = \"\",\n"
+    >"%volume    = \"\",\n"
+    >"%number    = \"\",\n"
+    >"%series    = \"\",\n"
+    >"%edition   = \"\",\n"
+    >"%address   = \"\",\n"
+    >"%type      = \"\",\n"
+    >"%chapter   = \"\",\n"
+    >"%pages     = \"\",\n"
+    >"%year      = \"\",\n"
+    >"%month     = \"\",\n"
+    >"%url       = \"\",\n"
+    >"note       = \"Accessed " '(insert-date "t") "\",\n"
+    "},\n" _
+    )
 
-(define-skeleton bibtex-skeleton-citation
-  "Insert the contents of a BibTeX citation starting with the label."
-  "Label: "
-  str | "label" ",\n"
-  >"author     = \"\",\n"
-  >"title      = \"\",\n"
-  >"%journal   = \"\",\n"
-  >"%booktitle = \"\",\n"
-  >"%publisher = \"\",\n"
-  >"%editor    = \"\",\n"
-  >"%volume    = \"\",\n"
-  >"%number    = \"\",\n"
-  >"%series    = \"\",\n"
-  >"%edition   = \"\",\n"
-  >"%address   = \"\",\n"
-  >"%type      = \"\",\n"
-  >"%chapter   = \"\",\n"
-  >"%pages     = \"\",\n"
-  >"%year      = \"\",\n"
-  >"%month     = \"\",\n"
-  >"%url       = \"\",\n"
-  >"note       = \"Accessed " '(insert-date "t") "\",\n"
-  "},\n" _
-  )
+  (define-skeleton bibtex-skeleton-insert-citation
+    "Skeleton wrapper for BIBTEX-INSERT-CITATION"
+    "(a)rticle | (b)ook | (c)ollection | (w)ebsite: "
+    "(bibtex-insert-citation \"" str "\")"_)
 
-(define-skeleton bibtex-skeleton-insert-citation
-  "Skeleton wrapper for BIBTEX-INSERT-CITATION"
-  "(a)rticle | (b)ook | (c)ollection | (w)ebsite: "
-  "(bibtex-insert-citation \"" str "\")"_)
+  ;; C
+  (define-skeleton c-skeleton-hello
+    "Inserts a simple 'hello-world' program in C."
+    nil
+    "#include<stdio.h>\n\n"
+    "int main (int argc, char *argv[]) {\n"
+    _  >"printf(\"%s\", \"Hello world.\\n\");\n"
+    >"return 0;\n"
+    "}\n")
 
-;; JavaScript
-(define-skeleton js-skeleton-jest
-  "Inserts a test block for jest."
-  "Name: "
-  _"('', () => {\n"
-  >"\n"
-  "});\n")
+  ;; Go
+  (define-skeleton go-err-check
+    "Go error check boilerplate"
+    nil
+    "if err != nil {\n"
+    > _"\n"
+    "}\n")
 
-(define-skeleton js-skeleton-log
-  "Inserts console.log()"
-  "Name: "
-  "console.log("_")"\n)
+  (define-skeleton go-append
+    "go append() boilerplate"
+    nil
+    '(setq v1 (skeleton-read "var? "))
+    > v1 " = append(" v1 ", " _ ")")
 
-;; Go
-(define-skeleton go-err-check
-  "Go error check boilerplate"
-  "Name: "
-  "if err != nil {\n"
-  > _"\n"
-  "}\n")
+  (define-skeleton go-test-case
+    "go t.Run boilerplate"
+    nil
+    "t.Run(\""_"\", func(t *testing.T) {\n"
+    > "\n"
+    "})\n")
 
-(define-skeleton go-append
-  "go append() boilerplate"
-  nil
-  '(setq v1 (skeleton-read "var? "))
-  > v1 " = append(" v1 ", " _ ")")
+  ;; JavaScript
+  (define-skeleton js-skeleton-jest
+    "Inserts a test block for jest."
+    nil
+    _"('', () => {\n"
+    >"\n"
+    "});\n")
 
-(define-skeleton go-test-case
-  "go t.Run boilerplate"
-  "Name: "
-  "t.Run(\""_"\", func(t *testing.T) {\n"
-  > "\n"
-  "})\n")
+  (define-skeleton js-skeleton-log
+    "Inserts console.log()"
+    nil
+    "console.log("_")"\n)
+
+  ;; Ruby
+  (define-skeleton ruby-skeleton-rspec
+    "Inserts a test block for rspec"
+    nil
+    "it \""_"\" do\n\n"
+    "end\n")
 #+END_SRC
 
 ** Abbrev Mode
@@ -886,55 +895,60 @@ Combining an =abbrev= expansion with a =skeleton= template is very powerful.
 Expansions can be either global or local to a specific major mode.
 
 #+BEGIN_SRC emacs-lisp
-;; enable abbrev for all buffers
-(use-package abbrev
-  :init
-  (setq-default abbrev-mode t))
+  ;; enable abbrev for all buffers
+  (use-package abbrev
+    :init
+    (setq-default abbrev-mode t))
 
-;; Abbrev Tables
-(define-abbrev-table 'global-abbrev-table
-  '(
-    ("8date" "" insert-iso-date-skeleton 0)
-    ("8today" "" insert-verbose-date-skeleton 0)
-    ))
+  ;; Abbrev Tables
+  (define-abbrev-table 'global-abbrev-table
+    '(
+      ("8date" "" insert-iso-date-skeleton 0)
+      ("8today" "" insert-verbose-date-skeleton 0)
+      ))
 
-(define-abbrev-table 'c-mode-abbrev-table
-  '(
-    ("8hello" "" c-skeleton-hello 0)
-    ))
+  (define-abbrev-table 'org-mode-abbrev-table
+    '(
+      ("8header" "" org-skeleton-header 0)
+      ("8lheader" "" org-skeleton-latex-header 0)
+      ("8begin" "" latex-skeleton-begin 0)
+      ))
 
-(define-abbrev-table 'org-mode-abbrev-table
-  '(
-    ("8header" "" org-skeleton-header 0)
-    ("8lheader" "" org-skeleton-latex-header 0)
-    ("8begin" "" latex-skeleton-begin 0)
-    ))
+  (define-abbrev-table 'bibtex-mode-abbrev-table
+    '(
+      ("8cite" "" bibtex-skeleton-insert-citation 0)
+      ))
 
-(define-abbrev-table 'bibtex-mode-abbrev-table
-  '(
-    ("8cite" "" bibtex-skeleton-insert-citation 0)
-    ))
+  (define-abbrev-table 'c-mode-abbrev-table
+    '(
+      ("8hello" "" c-skeleton-hello 0)
+      ))
 
-(define-abbrev-table 'js2-mode-abbrev-table
-  '(
-    ("8jest" "" js-skeleton-jest 0)
-    ("8log" "" js-skeleton-log 0)
-    ))
+  (define-abbrev-table 'go-mode-abbrev-table
+    '(
+      ("8err" "" go-err-check 0)
+      ("8append" "" go-append 0)
+      ("8test" "" go-test-case 0)
+      ))
 
-(define-abbrev-table 'web-mode-abbrev-table
-  '(
-    ("8log" "" js-skeleton-log 0)
-    ))
+  (define-abbrev-table 'js2-mode-abbrev-table
+    '(
+      ("8jest" "" js-skeleton-jest 0)
+      ("8log" "" js-skeleton-log 0)
+      ))
 
-(define-abbrev-table 'go-mode-abbrev-table
-  '(
-    ("8err" "" go-err-check 0)
-    ("8append" "" go-append 0)
-    ("8test" "" go-test-case 0)
-    ))
+  (define-abbrev-table 'web-mode-abbrev-table
+    '(
+      ("8log" "" js-skeleton-log 0)
+      ))
 
-;; stop asking whether to save newly added abbrev when quitting emacs
-(setq save-abbrevs nil)
+  (define-abbrev-table 'ruby-mode-abbrev-table
+    '(
+      ("8it" "" ruby-skeleton-rspec)
+      ))
+
+  ;; stop asking whether to save newly added abbrev when quitting emacs
+  (setq save-abbrevs nil)
 #+END_SRC
 
 ** Git Link
@@ -949,90 +963,17 @@ Expansions can be either global or local to a specific major mode.
 * Custom Functions
 ** Create new scratch buffer
 #+BEGIN_SRC emacs-lisp
-(defun my/create-scratch-buffer nil
-  "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
-  (interactive)
-  (let ((n 0)
-        bufname)
-    (while (progn
-             (setq bufname (concat "*scratch"
-                                   (if (= n 0) "" (int-to-string n))
-                                   "*"))
-             (setq n (1+ n))
-             (get-buffer bufname)))
-    (switch-to-buffer (get-buffer-create bufname))
-    (text-mode)))
-#+END_SRC
-
-** Toggle Window Split
-#+BEGIN_SRC emacs-lisp
-(defun my/toggle-window-split ()
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
-#+END_SRC
-
-** Rotate Windows
-#+BEGIN_SRC emacs-lisp
-(defun my/rotate-windows ()
-  "Rotate your windows"
-  (interactive)
-  (cond ((not (> (count-windows)1))
-         (message "You can't rotate a single window!"))
-        (t
-         (setq i 1)
-         (setq numWindows (count-windows))
-         (while  (< i numWindows)
-           (let* ((w1 (elt (window-list) i))
-                  (w2 (elt (window-list) (+ (% i numWindows) 1)))
-                  (b1 (window-buffer w1))
-                  (b2 (window-buffer w2))
-                  (s1 (window-start w1))
-                  (s2 (window-start w2)))
-             (set-window-buffer w1  b2)
-             (set-window-buffer w2 b1)
-             (set-window-start w1 s2)
-             (set-window-start w2 s1)
-             (setq i (1+ i)))))))
-#+END_SRC
-
-** Cleanup Buffer
-#+BEGIN_SRC emacs-lisp
-(defun my/untabify-buffer ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun my/indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun my/cleanup-buffer ()
-  "Perform a bunch of operations on the whitespace content of a buffer.
-Including indent-buffer, which should not be called automatically on save."
-  (interactive)
-  (my/untabify-buffer)
-  (delete-trailing-whitespace)
-  (my/indent-buffer))
+  (defun my/create-scratch-buffer nil
+    "Create a new scratch buffer to work in."
+    (interactive)
+    (let ((n 0)
+          (bufname nil))
+      (while (progn
+               (setq bufname (if (= n 0) "*scratch*" (format "*scratch%d" n)))
+               (setq n (1+ n))
+               (get-buffer bufname)))
+      (switch-to-buffer (get-buffer-create bufname))
+      (org-mode)))
 #+END_SRC
 
 ** Rename Buffer & File
@@ -1057,18 +998,18 @@ Including indent-buffer, which should not be called automatically on save."
 
 ** Delete Buffer & File
 #+BEGIN_SRC emacs-lisp
-(defun my/delete-current-buffer-file ()
-  "Removes file connected to current buffer and kills buffer."
-  (interactive)
-  (let ((filename (buffer-file-name))
-        (buffer (current-buffer))
-        (name (buffer-name)))
-    (if (not (and filename (file-exists-p filename)))
-        (ido-kill-buffer)
-      (when (yes-or-no-p "Are you sure you want to remove this file? ")
-        (delete-file filename)
-        (kill-buffer buffer)
-        (message "File '%s' successfully removed" filename)))))
+  (defun my/delete-current-buffer-file ()
+    "Removes file connected to current buffer and kills buffer."
+    (interactive)
+    (let ((filename (buffer-file-name))
+          (buffer (current-buffer))
+          (name (buffer-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (kill-buffer buffer)
+        (when (yes-or-no-p "Are you sure you want to remove this file? ")
+          (delete-file filename)
+          (kill-buffer buffer)
+          (message "File '%s' successfully removed" filename)))))
 #+END_SRC
 
 ** Remove Secondary Selection
