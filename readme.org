@@ -76,97 +76,97 @@ Exchange startup time for elegance:
 
 * Better Defaults
 #+BEGIN_SRC emacs-lisp
-;; Line Numbers
-(global-display-line-numbers-mode t)
+  ;; Line Numbers
+  (global-display-line-numbers-mode t)
 
-;; Fix empty clipboard error
-(setq save-interprogram-paste-before-kill nil)
+  ;; Fix empty clipboard error
+  (setq save-interprogram-paste-before-kill nil)
 
-;; Remove text in active region if inserting text
-(delete-selection-mode 1)
+  ;; Remove text in active region if inserting text
+  (delete-selection-mode 1)
 
-;; Don't automatically copy selected text
-(setq select-enable-primary nil)
+  ;; Don't automatically copy selected text
+  (setq select-enable-primary nil)
 
-;; Full path in frame title.
-(setq frame-title-format '(buffer-file-name "%f" ("%b")))
+  ;; Full path in frame title.
+  (setq frame-title-format '(buffer-file-name "%f" ("%b")))
 
-;; Auto refresh buffers when edits occur outside emacs
-(global-auto-revert-mode 1)
+  ;; Auto refresh buffers when edits occur outside emacs
+  (global-auto-revert-mode 1)
 
-;; Also auto refresh Dired, but be quiet about it
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
+  ;; Also auto refresh Dired, but be quiet about it
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
 
-;; Quickly copy/move file in Dired
-(setq dired-dwim-target t)
+  ;; Quickly copy/move file in Dired
+  (setq dired-dwim-target t)
 
-;; Show keystrokes in progress
-(setq echo-keystrokes 0.1)
+  ;; Show keystrokes in progress
+  (setq echo-keystrokes 0.1)
 
-;; Move files to trash when deleting
-(setq delete-by-moving-to-trash t)
+  ;; Move files to trash when deleting
+  (setq delete-by-moving-to-trash t)
 
-;; Transparently open compressed files
-(auto-compression-mode t)
+  ;; Transparently open compressed files
+  (auto-compression-mode t)
 
-;; Show matching parens
-(setq show-paren-delay 0)
-(show-paren-mode 1)
+  ;; Show matching parens
+  (setq show-paren-delay 0)
+  (show-paren-mode 1)
 
-;; Auto-close brackets and double quotes
-(electric-pair-mode 1)
+  ;; Auto-close brackets and double quotes
+  (electric-pair-mode 1)
 
-;; Don't automatically indent lines
-(electric-indent-mode -1)
+  ;; Don't automatically indent lines
+  (electric-indent-mode -1)
 
-;; Answering just 'y' or 'n' will do
-(defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Answering just 'y' or 'n' will do
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; UTF-8 please
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+  ;; UTF-8 please
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
 
-;; Always display line and column numbers
-(setq line-number-mode t)
-(setq column-number-mode t)
+  ;; Always display line and column numbers
+  (setq line-number-mode t)
+  (setq column-number-mode t)
 
-;; Wrap lines at 80 characters wide, not 72
-(setq fill-column 80)
+  ;; Wrap lines at 80 characters wide, not 72
+  (setq fill-column 80)
 
-;; Smooth Scroll.
-(setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ; one line at a time
+  ;; Smooth Scroll.
+  (setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ; one line at a time
 
-;; Scroll one line when hitting bottom of window
-(setq scroll-conservatively 10000)
+  ;; Scroll one line when hitting bottom of window
+  (setq scroll-conservatively 10000)
 
-;; Navigate sillycased words
-(global-subword-mode 1)
+  ;; Navigate sillycased words
+  (global-subword-mode 1)
 
-;; Word wrap (t is no wrap, nil is wrap)
-(setq-default truncate-lines nil)
+  ;; Word wrap (t is no wrap, nil is wrap)
+  (setq-default truncate-lines nil)
 
-;; Sentences do not need double spaces to end. Period.
-(set-default 'sentence-end-double-space nil)
+  ;; Sentences do not need double spaces to end. Period.
+  (set-default 'sentence-end-double-space nil)
 
-;; Don't use shift to mark things.
-(setq shift-select-mode nil)
+  ;; Don't use shift to mark things.
+  (setq shift-select-mode nil)
 
-;; eval-expression-print-level needs to be set to nil (turned off) so
-;; that you can always see what's happening
-(setq eval-expression-print-level nil)
+  ;; eval-expression-print-level needs to be set to nil (turned off) so
+  ;; that you can always see what's happening
+  (setq eval-expression-print-level nil)
 
-;; Allow clipboard from outside emacs
-(setq select-enable-clipboard t
-      save-interprogram-paste-before-kill t
-      apropos-do-all t
-      mouse-yank-at-point t)
+  ;; Allow clipboard from outside emacs
+  (setq select-enable-clipboard t
+        save-interprogram-paste-before-kill t
+        apropos-do-all t
+        mouse-yank-at-point t)
 
-;; Improve performance of very long lines
-(setq-default bidi-display-reordering 'left-to-right)
+  ;; Improve performance of very long lines
+  (setq-default bidi-display-reordering 'left-to-right)
 #+END_SRC
 
 * Package Management
@@ -563,6 +563,18 @@ gem install rubocop solargraph solargraph-rails
   (setq js-indent-level 2))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package prettier-js
+    :hook ((js-mode . prettier-js-mode)
+           (web-mode . prettier-js-mode)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package add-node-modules-path
+    :hook ((js-mode . add-node-modules-path)
+           (web-mode . add-node-modules-path)))
+#+end_src
+
 ** Compilation Mode
 #+BEGIN_SRC emacs-lisp
 (add-hook 'compilation-mode-hook (lambda () (setq truncate-lines t)))
@@ -647,13 +659,6 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
 #+END_SRC
 
 * Minor Modes
-** Project.el
-#+begin_src emacs-lisp
-(use-package project
-  :bind
-  ("M-SPC" . project-find-file))
-#+end_src
-
 ** Wgrep
 Like =wdired= for =rgrep= and =ag-project=.
 
@@ -680,19 +685,21 @@ Results Buffer:
 - =g= Rerun search
 
   #+begin_src emacs-lisp
-(use-package rg
-  :ensure t
-  :config
-  (rg-define-search my/rg-project
-    "Search for any files in project or current directory"
-    :query ask
-    :format literal
-    :confirm prefix
-    :files "everything"
-    :flags ("--hidden -g !.git")
-    :dir (if (vc-root-dir)
-             (vc-root-dir)
-           default-directory)))
+    (use-package rg
+      :ensure t
+      :config
+      (rg-define-search my/rg-project
+        "Search for any files in project or current directory"
+        :query ask
+        :format literal
+        :confirm prefix
+        :files "everything"
+        :flags ("--hidden -g !.git")
+        :dir (if (vc-root-dir)
+                 (vc-root-dir)
+               default-directory))
+      :bind
+      ("M-SPC" . my/rg-project))
   #+end_src
 
 ** Rainbow Mode
@@ -931,7 +938,7 @@ Expansions can be either global or local to a specific major mode.
       ("8test" "" go-test-case 0)
       ))
 
-  (define-abbrev-table 'js2-mode-abbrev-table
+  (define-abbrev-table 'js-mode-abbrev-table
     '(
       ("8jest" "" js-skeleton-jest 0)
       ("8log" "" js-skeleton-log 0)
@@ -961,6 +968,13 @@ Expansions can be either global or local to a specific major mode.
 #+END_SRC
 
 * Custom Functions
+** Reload current file without confirmation
+#+begin_src emacs-lisp
+  (defun my/reload-buffer ()
+    (interactive)
+    (revert-buffer t t))
+#+end_src
+
 ** Create new scratch buffer
 #+BEGIN_SRC emacs-lisp
   (defun my/create-scratch-buffer nil
