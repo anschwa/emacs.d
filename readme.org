@@ -167,6 +167,9 @@ Exchange startup time for elegance:
 
   ;; Improve performance of very long lines
   (setq-default bidi-display-reordering 'left-to-right)
+
+  ;; Pairing
+  (global-hl-line-mode 1)
 #+END_SRC
 
 * Package Management
@@ -384,7 +387,7 @@ system.
           `(("t" "Tasks" entry (file ,(concat org-directory "/todo.org"))
              "* TODO %?\n %U\n  %i\n  %a")
             ("n" "Notes" entry (file ,(concat org-directory "/notes.org"))
-             "* %?\n %U\n %i\n")))
+             "* %?\n %U\n %i\n %a")))
 
     ;; setup org-agenda
     (setq org-agenda-files (list org-directory))
@@ -455,12 +458,6 @@ Include syntax highlighting when exporting Org documents to HTML.
 #+END_SRC
 
 ** Ruby
-The standard ~ruby-mode~ is pretty good on its own. In fact, it is
-written and maintained by "Matz", who is the creator of Ruby itself.
-
-However, you can get more linting data by using ~rubocop~, and
-~solargraph~ is the canonical language server.
-
 #+begin_src text
 gem install rubocop solargraph solargraph-rails
 #+end_src
@@ -478,6 +475,13 @@ gem install rubocop solargraph solargraph-rails
   :hook ((ruby-mode . my/ruby-mode-hook)))
 #+END_SRC
 
+~inf-ruby~ enables support for debugging breakpoints while running tests inside compilation buffers.
+
+#+begin_src emacs-lisp
+  (use-package inf-ruby
+    :ensure t)
+#+end_src
+
 #+begin_src emacs-lisp
 (use-package rubocop
   :ensure t
@@ -488,15 +492,25 @@ gem install rubocop solargraph solargraph-rails
 #+begin_src emacs-lisp
   (use-package rspec-mode
     :ensure t
-    :config
-    (setq rspec-primary-source-dirs '("app" "lib" "packs"))
+    :custom
+    (rspec-docker-file-name "docker-compose.yaml")
+    (rspec-docker-cwd "/opt/app")
+    (rspec-docker-container "app")
+    (rspec-docker-command "docker compose exec")
+    (rspec-use-docker-when-possible nil)  ; enable/disable running tests in container
+    (rspec-primary-source-dirs '("app" "lib"))
 
     (defun my/rspec-compile()
       (interactive)
       (rspec-compile
        (read-from-minibuffer
         "Rspec: "
-        (format "%s:%d" buffer-file-name (line-number-at-pos))))))
+        (format "%s:%d"
+                (file-relative-name buffer-file-name (project-root (project-current)))
+                (line-number-at-pos)))))
+    :bind (:map ruby-mode-map
+                ("C-t p c" . my/rspec-compile))
+    :hook (compilation-filter . inf-ruby-auto-enter))
 #+end_src
 
 ** Web Mode
@@ -507,7 +521,7 @@ gem install rubocop solargraph solargraph-rails
   #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.eex\\'" "\\.tmpl\\'")
+  :mode ("\\.html\\'" "\\.php\\'" "\\.vue\\'" "\\.erb\\'" "\\.eex\\'" "\\.tmpl\\'")
   :custom-face
   (web-mode-doctype-face ((t (:inherit font-lock-builtin-face))))
   (web-mode-html-attr-name-face ((t :foreground "nil")))
@@ -641,7 +655,7 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 #+END_SRC
 
-** Bash
+** Shell
 #+BEGIN_SRC emacs-lisp
 (use-package flymake-shellcheck
   :ensure t
@@ -658,9 +672,23 @@ Use =n, p= to jump between conflicts and select changes to keep using =a, b=.
   :hook ((dired-after-readin . hl-line-mode)))
 #+END_SRC
 
+** SQL
+#+begin_src emacs-lisp
+  (use-package sqlformat
+    :config
+    (setq sqlformat-command 'sqlformat)
+    (setq sqlformat-args '("--indent_columns")))
+#+end_src
+
 * Minor Modes
+** Project.el
+The best project navigation mode comes included with Emacs.
+- ~C-x p f~ :: ~project-find-file~
+- ~C-x p g~ :: ~project-find-regep~
+- ~C-x p ?~ :: List additional commands
+
 ** Wgrep
-Like =wdired= for =rgrep= and =ag-project=.
+Like =wdired= for =rgrep= and =rg-project=.
 
 - =C-c C-p= to enable (=wgrep-change-to-wgrep-mode=)
 - =C-c C-c= to execute
@@ -699,7 +727,8 @@ Results Buffer:
                  (vc-root-dir)
                default-directory))
       :bind
-      ("M-SPC" . my/rg-project))
+      (("C-x p g" . rg-project)
+      ("M-SPC" . my/rg-project)))
   #+end_src
 
 ** Rainbow Mode
@@ -742,7 +771,7 @@ like quotes, parens, or markup tags.
 (use-package expand-region
   :ensure t
   :commands (er/expand-region)
-  :bind ("C-=" . er/expand-region))
+  :bind ("M-h" . er/expand-region))
 #+END_SRC
 
 ** Skeleton Mode
@@ -968,6 +997,60 @@ Expansions can be either global or local to a specific major mode.
 #+END_SRC
 
 * Custom Functions
+** Toggle Quotes
+#+BEGIN_SRC emacs-lisp
+  (require 'cl)
+  (defun my/get-quote-chars ()
+    "get available string symbols from the active syntax-table"
+    (let ((quotes '(?\' ?\" ?\`)))
+      (seq-filter (lambda (q) (eq (char-syntax q) 34)) quotes)))
+
+  (defun my/toggle-quotes ()
+    "toggles a string between quote levels when in most programming modes"
+    (interactive)
+    (let* ((beg (nth 8 (syntax-ppss)))
+           (orig-quote (char-after beg))
+           (quotes (my/get-quote-chars))
+           (new-quote (case (length quotes)
+                            (1 (when (eq orig-quote (car quotes))
+                                 (car quotes)))
+                            (2 (cond
+                                ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
+                                ((eq orig-quote (nth 1 quotes)) (nth 0 quotes))))
+                            (3 (cond
+                                ((eq orig-quote (nth 0 quotes)) (nth 1 quotes))
+                                ((eq orig-quote (nth 1 quotes)) (nth 2 quotes))
+                                ((eq orig-quote (nth 2 quotes)) (nth 0 quotes)))))))
+      (save-restriction
+        (widen)
+        (save-excursion
+          (catch 'done
+            (unless new-quote
+              (message "Not inside a string")
+              (throw 'done nil))
+            (goto-char beg)
+            (delete-char 1)
+            (insert-char new-quote)
+            (while t
+              (cond ((eobp)
+                     (throw 'done nil))
+                    ((= (char-after) orig-quote)
+                     (delete-char 1)
+                     (insert-char new-quote)
+                     (throw 'done nil))
+                    ((= (char-after) ?\\)
+                     (forward-char 1)
+                     (when (= (char-after) orig-quote)
+                       (delete-char -1))
+                     (forward-char 1))
+                    ((= (char-after) new-quote)
+                     (insert-char ?\\)
+                     (forward-char 1))
+                    (t (forward-char 1)))))))))
+
+  (bind-key "C-c '" 'my/toggle-quotes)
+#+END_SRC
+
 ** Reload current file without confirmation
 #+begin_src emacs-lisp
   (defun my/reload-buffer ()
@@ -989,6 +1072,59 @@ Expansions can be either global or local to a specific major mode.
       (switch-to-buffer (get-buffer-create bufname))
       (org-mode)))
 #+END_SRC
+
+** Toggle Window Split
+#+BEGIN_SRC emacs-lisp
+(defun my/toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+#+END_SRC
+
+** Rotate Windows
+#+BEGIN_SRC emacs-lisp
+(defun my/rotate-windows ()
+  "Rotate your windows"
+  (interactive)
+  (cond ((not (> (count-windows)1))
+         (message "You can't rotate a single window!"))
+        (t
+         (setq i 1)
+         (setq numWindows (count-windows))
+         (while  (< i numWindows)
+           (let* ((w1 (elt (window-list) i))
+                  (w2 (elt (window-list) (+ (% i numWindows) 1)))
+                  (b1 (window-buffer w1))
+                  (b2 (window-buffer w2))
+                  (s1 (window-start w1))
+                  (s2 (window-start w2)))
+             (set-window-buffer w1  b2)
+             (set-window-buffer w2 b1)
+             (set-window-start w1 s2)
+             (set-window-start w2 s1)
+             (setq i (1+ i)))))))
+#+END_SRC
+
 
 ** Rename Buffer & File
 #+BEGIN_SRC emacs-lisp
